@@ -38,7 +38,11 @@ cmakeConfigurePhase() {
 
     # Avoid cmake resetting the rpath of binaries, on make install
     # And build always Release, to ensure optimisation flags
-    cmakeFlags="-DCMAKE_BUILD_TYPE=Release -DCMAKE_SKIP_BUILD_RPATH=ON $cmakeFlags"
+    if [ -z "$cmakeBuildType" ]
+        cmakeBuildType=Release
+    fi
+    
+    cmakeFlags="-DCMAKE_BUILD_TYPE=$cmakeBuildType -DCMAKE_SKIP_BUILD_RPATH=ON $cmakeFlags"
 
     echo "cmake flags: $cmakeFlags ${cmakeFlagsArray[@]}"
 
