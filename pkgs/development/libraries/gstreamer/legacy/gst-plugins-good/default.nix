@@ -1,7 +1,7 @@
 { fetchurl, stdenv, pkgconfig, gst_plugins_base, aalib, cairo
 , flac, libjpeg, zlib, speex, libpng, libdv, libcaca, libvpx
 , libiec61883, libavc1394, taglib, pulseaudio, gdk_pixbuf, orc
-, glib, gstreamer, bzip2
+, glib, gstreamer, bzip2, libsoup
 , # Whether to build no plugins that have external dependencies
   # (except the PulseAudio plugin).
   minimalDeps ? false
@@ -20,13 +20,13 @@ stdenv.mkDerivation rec {
 
   patches = [ ./v4l.patch ./linux-headers-3.9.patch ];
 
-  configureFlags = "--disable-oss";
+  configureFlags = "--enable-experimental --disable-oss";
 
   buildInputs =
     [ pkgconfig glib gstreamer gst_plugins_base pulseaudio ]
     ++ stdenv.lib.optionals (!minimalDeps)
       [ aalib libcaca cairo libdv flac libjpeg libpng speex
-        taglib bzip2 libvpx gdk_pixbuf orc ];
+        taglib bzip2 libvpx gdk_pixbuf orc libsoup ];
 
   enableParallelBuilding = true;
 

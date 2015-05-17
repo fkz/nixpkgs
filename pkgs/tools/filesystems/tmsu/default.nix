@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation rec {
   name = "tmsu-${version}";
-  version = "0.4.3";
+  version = "0.5.2";
 
   go-sqlite3 = fetchgit {
     url = "git://github.com/mattn/go-sqlite3";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     owner = "oniony";
     repo = "tmsu";
     rev = "v${version}";
-    sha256 = "1jwmzqn3rd59malkp7ypjphd863afablhfsdxjnlap7zx72zb3dn";
+    sha256 = "090wzhcd4sr3358p1f640psy42r4kd3kkhgnf8196qsh2vcx8arc";
   };
 
   buildInputs = [ go fuse ];

@@ -171,6 +171,9 @@ let
 
     SSLRandomSeed startup builtin
     SSLRandomSeed connect builtin
+
+    SSLProtocol All -SSLv2 -SSLv3
+    SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5:!EXP
   '';
 
 
@@ -228,6 +231,9 @@ let
     ${if cfg.sslServerCert != null then ''
       SSLCertificateFile ${cfg.sslServerCert}
       SSLCertificateKeyFile ${cfg.sslServerKey}
+      ${if cfg.sslServerChain != null then ''
+        SSLCertificateChainFile ${cfg.sslServerChain}
+      '' else ""}
     '' else ""}
 
     ${if cfg.enableSSL then ''
@@ -682,6 +688,7 @@ in
         serviceConfig.Type = "forking";
         serviceConfig.PIDFile = "${mainCfg.stateDir}/httpd.pid";
         serviceConfig.Restart = "always";
+        serviceConfig.RestartSec = "5s";
       };
 
   };

@@ -137,12 +137,13 @@ in
     # Add the mount helpers to the system path so that `mount' can find them.
     system.fsPackages = [ pkgs.dosfstools ];
 
-    environment.systemPackages =
-      [ pkgs.ntfs3g pkgs.fuse ]
-      ++ config.system.fsPackages;
+    environment.systemPackages = [ pkgs.fuse ] ++ config.system.fsPackages;
 
     environment.etc.fstab.text =
-      ''
+      let
+        fsToSkipCheck = [ "none" "btrfs" "zfs" "tmpfs" "nfs" ];
+        skipCheck = fs: fs.noCheck || fs.device == "none" || builtins.elem fs.fsType fsToSkipCheck;
+      in ''
         # This is a generated file.  Do not edit!
 
         # Filesystems.
@@ -154,7 +155,7 @@ in
             + " " + fs.fsType
             + " " + fs.options
             + " 0"
-            + " " + (if fs.fsType == "none" || fs.device == "none" || fs.fsType == "btrfs" || fs.fsType == "tmpfs" || fs.noCheck then "0" else
+            + " " + (if skipCheck fs then "0" else
                      if fs.mountPoint == "/" then "1" else "2")
             + "\n"
         )}

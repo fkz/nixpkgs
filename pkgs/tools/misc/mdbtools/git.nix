@@ -1,5 +1,5 @@
 { stdenv, fetchurl, fetchgit, glib, readline, bison, flex, pkgconfig,
-  libiconvOrEmpty, autoconf, automake, libtool, which, txt2man, gnome_doc_utils,
+  libiconv, autoconf, automake, libtool, which, txt2man, gnome_doc_utils,
   scrollkeeper}:
 
 stdenv.mkDerivation {
@@ -9,13 +9,12 @@ stdenv.mkDerivation {
     url = "http://github.com/brianb/mdbtools.git";
     rev = "9ab40e83e6789015c965c92bdb62f92f8cdd0dbd";
     sha256 = "18j1a9y9xhl7hhx30zvmx2n4w7dc8c7sdr6722sf3mh5230mvv59";
-    name = "mdbtools-git-export";
   };
 
   buildInputs = [
     glib readline bison flex pkgconfig autoconf automake
-    libtool which txt2man gnome_doc_utils scrollkeeper
-  ] ++ libiconvOrEmpty;
+    libtool which txt2man gnome_doc_utils scrollkeeper libiconv
+  ];
 
   preConfigure = ''
     sed -e 's@static \(GHashTable [*]mdb_backends;\)@\1@' -i src/libmdb/backend.c

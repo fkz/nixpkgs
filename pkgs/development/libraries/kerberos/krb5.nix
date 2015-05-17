@@ -1,8 +1,8 @@
-{ stdenv, fetchurl, pkgconfig, perl, ncurses, yacc, openssl, openldap }:
+{ stdenv, fetchurl, pkgconfig, perl, ncurses, yacc, openssl, openldap, bootstrap_cmds }:
 
 let
   pname = "krb5";
-  version = "1.13";
+  version = "1.13.1";
   name = "${pname}-${version}";
   webpage = http://web.mit.edu/kerberos/;
 in
@@ -12,10 +12,12 @@ stdenv.mkDerivation (rec {
 
   src = fetchurl {
     url = "${webpage}dist/krb5/1.13/${name}-signed.tar";
-    sha256 = "10lmbbcrzknzjnhlfjgb4rc3vzncqhmd0kp82pwd0xxpkap7k3yw";
+    sha256 = "0gk6jvr64rf6l4xcyxn8i3fr5d1j7dhqvwyv3vw2qdkzz7yjkxjd";
   };
 
-  buildInputs = [ pkgconfig perl ncurses yacc openssl openldap ];
+  buildInputs = [ pkgconfig perl ncurses yacc openssl openldap ]
+    # Provides the mig command used by the build scripts
+    ++ stdenv.lib.optional stdenv.isDarwin bootstrap_cmds ;
 
   unpackPhase = ''
     tar -xf $src
@@ -34,4 +36,6 @@ stdenv.mkDerivation (rec {
     platforms = platforms.unix;
     maintainers = with maintainers; [ wkennington ];
   };
+
+  passthru.implementation = "krb5";
 })

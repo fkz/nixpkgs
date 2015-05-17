@@ -4,11 +4,11 @@
 , pulseaudio ? null }:
 
 stdenv.mkDerivation rec {
-  name = "dolphin-emu-20150103";
+  name = "dolphin-emu-20150403";
   src = fetchgit {
     url = git://github.com/dolphin-emu/dolphin.git;
-    rev = "03f716e651128a2da01f6afdd26545fafdd49971";
-    sha256 = "01dq5552wpfn7dvfvdxxzfxn1z08abqwpm4gf33c081bhhbsyny6";
+    rev = "38236fb8e8370f9f1ca1482ffa94b08c4595f2aa";
+    sha256 = "14v86c042jz5adqk6ngqbzl5xna7m69i39y7q23s7h6ra75461yf";
     fetchSubmodules = false;
   };
 

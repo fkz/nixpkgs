@@ -1,4 +1,4 @@
-{ stdenv, fetchgit, talloc }:
+{ stdenv, fetchgit, talloc, enableStatic ? false }:
 
 stdenv.mkDerivation rec {
   name = "proot-${version}";
@@ -12,11 +12,13 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ talloc ];
 
-  preBuild = ''
+  preBuild = stdenv.lib.optionalString enableStatic ''
+    export LDFLAGS="-static -L${talloc}/lib"
+  '' + ''
     substituteInPlace GNUmakefile --replace "/usr/local" "$out"
   '';
 
-  sourceRoot = "git-export/src";
+  sourceRoot = "proot/src";
 
   meta = with stdenv.lib; {
     homepage = http://proot.me;

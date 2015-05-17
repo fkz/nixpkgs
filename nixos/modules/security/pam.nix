@@ -6,8 +6,9 @@
 with lib;
 
 let
+  parentConfig = config;
 
-  pamOpts = args: {
+  pamOpts = { config, name, ... }: let cfg = config; in let config = parentConfig; in {
 
     options = {
 
@@ -60,6 +61,14 @@ let
         description = ''
           If set, fingerprint reader will be used (if exists and
           your fingerprints are enrolled).
+        '';
+      };
+
+      oathAuth = mkOption {
+        default = config.security.pam.enableOATH;
+        type = types.bool;
+        description = ''
+          If set, the OATH Toolkit will be used.
         '';
       };
 
@@ -122,6 +131,14 @@ let
         '';
       };
 
+      requireWheel = mkOption {
+        default = false;
+        type = types.bool;
+        description = ''
+          Whether to permit root access only to members of group wheel.
+        '';
+      };
+
       limits = mkOption {
         description = ''
           Attribute set describing resource limits.  Defaults to the
@@ -164,8 +181,8 @@ let
 
     };
 
-    config = let cfg = args.config; in {
-      name = mkDefault args.name;
+    config = {
+      name = mkDefault name;
       setLoginUid = mkDefault cfg.startSession;
       limits = mkDefault config.security.pam.loginLimits;
 
@@ -184,6 +201,8 @@ let
           # Authentication management.
           ${optionalString cfg.rootOK
               "auth sufficient pam_rootok.so"}
+          ${optionalString cfg.requireWheel
+              "auth required pam_wheel.so use_uid"}
           ${optionalString cfg.logFailures
               "auth required pam_tally.so"}
           ${optionalString (config.security.pam.enableSSHAgentAuth && cfg.sshAgentAuth)
@@ -193,9 +212,13 @@ let
           ${optionalString cfg.usbAuth
               "auth sufficient ${pkgs.pam_usb}/lib/security/pam_usb.so"}
           ${optionalString cfg.unixAuth
-              "auth sufficient pam_unix.so ${optionalString cfg.allowNullPassword "nullok"} likeauth"}
+              "auth ${if config.security.pam.enableEcryptfs then "required" else "sufficient"} pam_unix.so ${optionalString cfg.allowNullPassword "nullok"} likeauth"}
+          ${optionalString config.security.pam.enableEcryptfs
+              "auth required ${pkgs.ecryptfs}/lib/security/pam_ecryptfs.so unwrap"}
           ${optionalString cfg.otpwAuth
               "auth sufficient ${pkgs.otpw}/lib/security/pam_otpw.so"}
+          ${optionalString cfg.oathAuth
+              "auth sufficient ${pkgs.oathToolkit}/lib/security/pam_oath.so window=5 usersfile=/etc/users.oath"}
           ${optionalString config.users.ldap.enable
               "auth sufficient ${pam_ldap}/lib/security/pam_ldap.so use_first_pass"}
           ${optionalString config.krb5.enable ''
@@ -203,9 +226,11 @@ let
             auth [default=die success=done] ${pam_ccreds}/lib/security/pam_ccreds.so action=validate use_first_pass
             auth sufficient ${pam_ccreds}/lib/security/pam_ccreds.so action=store use_first_pass
           ''}
-          auth required   pam_deny.so
+          ${optionalString (! config.security.pam.enableEcryptfs) "auth required pam_deny.so"}
 
           # Password management.
+          ${optionalString config.security.pam.enableEcryptfs
+              "password optional ${pkgs.ecryptfs}/lib/security/pam_ecryptfs.so"}
           password requisite pam_unix.so nullok sha512
           ${optionalString config.users.ldap.enable
               "password sufficient ${pam_ldap}/lib/security/pam_ldap.so"}
@@ -225,12 +250,16 @@ let
               "session required ${pkgs.pam}/lib/security/pam_mkhomedir.so silent skel=/etc/skel umask=0022"}
           ${optionalString cfg.updateWtmp
               "session required ${pkgs.pam}/lib/security/pam_lastlog.so silent"}
+          ${optionalString config.security.pam.enableEcryptfs
+              "session optional ${pkgs.ecryptfs}/lib/security/pam_ecryptfs.so"}
           ${optionalString config.users.ldap.enable
               "session optional ${pam_ldap}/lib/security/pam_ldap.so"}
           ${optionalString config.krb5.enable
               "session optional ${pam_krb5}/lib/security/pam_krb5.so"}
           ${optionalString cfg.otpwAuth
               "session optional ${pkgs.otpw}/lib/security/pam_otpw.so"}
+          ${optionalString cfg.oathAuth
+              "session optional ${pkgs.oathToolkit}/lib/security/pam_oath.so window=5 usersfile=/etc/users.oath"}
           ${optionalString cfg.startSession
               "session optional ${pkgs.systemd}/lib/security/pam_systemd.so"}
           ${optionalString cfg.forwardXAuth
@@ -328,6 +357,20 @@ in
       '';
     };
 
+    security.pam.enableOATH = mkOption {
+      default = false;
+      description = ''
+        Enable the OATH (one-time password) PAM module.
+      '';
+    };
+
+    security.pam.enableEcryptfs = mkOption {
+      default = false;
+      description = ''
+        Enable eCryptfs PAM module (mounting ecryptfs home directory on login).
+      '';
+    };
+
     users.motd = mkOption {
       default = null;
       example = "Today is Sweetmorn, the 4th day of The Aftermath in the YOLD 3178.";
@@ -347,7 +390,12 @@ in
       [ pkgs.pam ]
       ++ optional config.users.ldap.enable pam_ldap
       ++ optionals config.krb5.enable [pam_krb5 pam_ccreds]
-      ++ optionals config.security.pam.enableOTPW [ pkgs.otpw ];
+      ++ optionals config.security.pam.enableOTPW [ pkgs.otpw ]
+      ++ optionals config.security.pam.enableOATH [ pkgs.oathToolkit ]
+      ++ optionals config.security.pam.enableEcryptfs [ pkgs.ecryptfs ];
+
+    security.setuidPrograms =
+        optionals config.security.pam.enableEcryptfs [ "mount.ecryptfs_private" "umount.ecryptfs_private" ];
 
     environment.etc =
       mapAttrsToList (n: v: makePAMService v) config.security.pam.services;

@@ -1,39 +1,38 @@
-{ stdenv, fetchurl, substituteAll, pkgconfig
-, gettext, ncurses, libdrm, libpciaccess }:
+{ stdenv, fetchFromGitHub, pkgconfig, gettext, ncurses, libdrm, libpciaccess }:
 
-stdenv.mkDerivation rec {
+let version = "v0.8-8-g2499679"; in
+stdenv.mkDerivation {
   name = "radeontop-${version}";
-  version = "0.8";
 
-  src = fetchurl {
-    url = "https://github.com/clbr/radeontop/archive/v${version}.tar.gz";
-    sha256 = "12c4kpr9zy2a21k8mck9cbfwm54x1l0i96va97m70pc9ramf2c24";
+  src = fetchFromGitHub {
+    sha256 = "112zf6ms0qpmr9h3l4lg5wik5j206mgij0nypba5lnqzksxh2f88";
+    rev = "2499679fda60c3f6239886296fd2a74155f45f77";
+    repo = "radeontop";
+    owner = "clbr";
   };
 
   buildInputs = [ pkgconfig gettext ncurses libdrm libpciaccess ];
 
-  patches = [
-    ./install-paths.patch
+  enableParallelBuilding = true;
 
-    # The default generation of version.h expects a git clone.
-    (substituteAll {
-      src = ./version-header.patch;
-      inherit version;
-    })
-  ];
-
-  postPatch = ''
-    substituteInPlace radeontop.c \
-      --replace /usr/share/locale $out/share/locale
+  patchPhase = ''
+    substituteInPlace getver.sh --replace ver=unknown ver=${version}
   '';
 
-  makeFlags = "DESTDIR=$(out)";
+  makeFlags = "PREFIX=$(out)";
 
   meta = with stdenv.lib; {
     description = "Top-like tool for viewing AMD Radeon GPU utilization";
+    longDescription = ''
+      View GPU utilization, both for the total activity percent and individual
+      blocks. Supports R600 and later cards: even Southern Islands should work.
+      Works with both the open drivers and AMD Catalyst. Total GPU utilization
+      is also valid for OpenCL loads; the other blocks are only useful for GL
+      loads. Requires root rights or other permissions to read /dev/mem.
+    '';
     homepage = https://github.com/clbr/radeontop;
     platforms = platforms.linux;
     license = licenses.gpl3;
-    maintainers = [ maintainers.rycee ];
+    maintainers = with maintainers; [ rycee nckx ];
   };
 }

@@ -1,3 +1,8 @@
+[<img src="http://nixos.org/logo/nixos-hires.png" width="500px" alt="logo" />
+](https://nixos.org/nixos)
+
+[![Build Status](https://travis-ci.org/NixOS/nixpkgs.svg?branch=master)](https://travis-ci.org/NixOS/nixpkgs) [![Issue Stats](http://www.issuestats.com/github/nixos/nixpkgs/badge/pr)](http://www.issuestats.com/github/nixos/nixpkgs) [![Issue Stats](http://www.issuestats.com/github/nixos/nixpkgs/badge/issue)](http://www.issuestats.com/github/nixos/nixpkgs)
+
 Nixpkgs is a collection of packages for [Nix](https://nixos.org/nix/) package
 manager.
 
@@ -14,5 +19,8 @@ manager.
 
 Communication:
 
-* [Mailing list](https://lists.science.uu.nl/mailman/listinfo/nix-dev)
+* [Mailing list](http://lists.science.uu.nl/mailman/listinfo/nix-dev)
 * [IRC - #nixos on freenode.net](irc://irc.freenode.net/#nixos)
+
+---
+[![Throughput Graph](https://graphs.waffle.io/nixos/nixpkgs/throughput.svg)](https://waffle.io/nixos/nixpkgs/metrics)

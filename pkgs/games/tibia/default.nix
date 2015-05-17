@@ -3,11 +3,11 @@
 with stdenv.lib;
 assert stdenv.isi686;
 stdenv.mkDerivation {
-  name = "tibia-10.71";
+  name = "tibia-10.77";
 
   src = fetchurl {
-    url = http://static.tibia.com/download/tibia1071.tgz;
-    sha256 = "183949xfvbbxbhj4i85ybcfv7h9j1f4va4c61wjzbhyjf55vj69a";
+    url = http://static.tibia.com/download/tibia1077.tgz;
+    sha256 = "1qz2a25irzhdwh4swwcfz4g37f1j3cxhm9c43yl763bvc718ikly";
   };
 
   shell = stdenv.shell;
@@ -25,7 +25,7 @@ stdenv.mkDerivation {
     cp -r * $out/res
 
     patchelf --set-interpreter ${glibc}/lib/ld-linux.so.2 \
-             --set-rpath ${stdenv.cc.gcc}/lib:${libX11}/lib:${mesa}/lib \
+             --set-rpath ${stdenv.cc.cc}/lib:${libX11}/lib:${mesa}/lib \
              "$out/res/Tibia"
 
     # We've patchelf'd the files. The main ‘Tibia’ binary is a bit

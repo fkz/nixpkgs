@@ -4,23 +4,23 @@
 
 stdenv.mkDerivation rec {
   name = "makemkv-${ver}";
-  ver = "1.9.0";
+  ver = "1.9.2";
   builder = ./builder.sh;
 
   src_bin = fetchurl {
     url = "http://www.makemkv.com/download/makemkv-bin-${ver}.tar.gz";
-    sha256 = "1rcvg7a1h59mfwsl5w0fr89m101pkqm9vgj06dl91hkgp5nh3wah";
+    sha256 = "0hjby7imja9sg2h68al81n4zl72mc3y3fqmf61sf1sad4njs9bkj";
   };
 
-  src_oss = fetchurl { 
+  src_oss = fetchurl {
     url = "http://www.makemkv.com/download/makemkv-oss-${ver}.tar.gz";
-    sha256 = "0415gw2nacb57sz5m0hcaznynmznc6v8qb6028qnsqgv39d4w8f8";
+    sha256 = "074scfz835jynzmb28i8q44hc6ixvfg3crgirmy02bbpxakyp1v6";
   };
 
   buildInputs = [openssl qt4 mesa zlib pkgconfig libav];
 
-  libPath = stdenv.lib.makeLibraryPath [stdenv.cc.gcc openssl mesa qt4 zlib ] 
-          + ":" + stdenv.cc.gcc + "/lib64";
+  libPath = stdenv.lib.makeLibraryPath [stdenv.cc.cc openssl mesa qt4 zlib ]
+          + ":" + stdenv.cc.cc + "/lib64";
 
   meta = with stdenv.lib; {
     description = "convert blu-ray and dvd to mkv";

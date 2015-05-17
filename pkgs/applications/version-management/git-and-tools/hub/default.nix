@@ -1,22 +1,23 @@
-{ stdenv, fetchgit, go }:
+{ stdenv, fetchgit, go, Security }:
 
 stdenv.mkDerivation rec {
   name = "hub-${version}";
-  version = "2.2.0-rc1";
+  version = "2.2.1";
 
   src = fetchgit {
     url = https://github.com/github/hub.git;
     rev = "refs/tags/v${version}";
-    sha256 = "1f6r8vlwnmqmr85drfv24vhqx1aacz6s83c2i804v9997n0wrwfm";
+    sha256 = "1rklqm5b0n5rcbdsr6kvk24cw7dc505ylb1608fva7qman49vlls";
   };
 
 
-  buildInputs = [ go ];
+  buildInputs = [ go ] ++ stdenv.lib.optional stdenv.isDarwin Security;
 
   phases = [ "unpackPhase" "buildPhase" "installPhase" ];
 
   buildPhase = ''
-    ./script/build
+    patchShebangs .
+    sh script/build
   '';
 
   installPhase = ''
@@ -36,7 +37,6 @@ stdenv.mkDerivation rec {
 # Should we also install provided git-hooks?
 # ?
   '';
-
 
   meta = with stdenv.lib; {
     description = "Command-line wrapper for git that makes you better at GitHub";

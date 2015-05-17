@@ -1,32 +1,23 @@
-{ stdenv, fetchurl, go }:
-stdenv.mkDerivation rec {
-  name = "scollector-${version}";
-  version = "20141204222654";
-  src = fetchurl {
-    url = "https://github.com/bosun-monitor/bosun/archive/${version}.tar.gz";
-    sha256 = "1jwhfwf24zhncrirna3q1vhap4f955bqx3sws3ryk5gp1w99l36n";
+{ lib, fetchFromGitHub, goPackages }:
+
+with goPackages;
+
+buildGoPackage rec {
+  rev = "20150409220449";
+  name = "bosun-${rev}";
+  goPackagePath = "bosun.org";
+  src = fetchFromGitHub {
+    inherit rev;
+    owner = "bosun-monitor";
+    repo = "bosun";
+    sha256 = "02bvq9hx2h4pgjclv09nm0al8ybvq0syhyhn5cvw0wgnn9bwn5mb";
   };
-  buildInputs = [ go ];
+  subPackages = [ "cmd/scollector" ];
 
-  sourceRoot = ".";
-
-  buildPhase = ''
-    mkdir -p src
-    mv bosun-${version} src/bosun.org
-
-    export GOPATH=$PWD
-    go build -v -o scollector src/bosun.org/cmd/scollector/main.go
-  '';
-
-  installPhase = ''
-    mkdir -p $out/bin
-    cp scollector $out/bin
-  '';
-
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Collect system information and store it in OpenTSDB or Bosun";
     homepage = http://bosun.org/scollector;
     license = licenses.mit;
-    platforms = stdenv.lib.platforms.linux;
+    platforms = platforms.linux;
   };
 }

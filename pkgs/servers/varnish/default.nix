@@ -1,15 +1,17 @@
-{ stdenv, fetchurl, pcre, libxslt, groff, ncurses, pkgconfig, readline }:
+{ stdenv, fetchurl, pcre, libxslt, groff, ncurses, pkgconfig, readline, python
+, pythonPackages }:
 
 stdenv.mkDerivation rec {
-  version = "3.0.5";
+  version = "4.0.3";
   name = "varnish-${version}";
 
   src = fetchurl {
     url = "http://repo.varnish-cache.org/source/${name}.tar.gz";
-    sha256 = "1dz2gazqczfzahh2n0aw71i5g9cpn5d98p9gj6ilqlkiqypxcbrh";
+    sha256 = "01l2iypajkdanxpbvzfxm6vs4jay4dgw7lmchqidnivz15sa3fcl";
   };
 
-  buildInputs = [ pcre libxslt groff ncurses pkgconfig readline ];
+  buildInputs = [ pcre libxslt groff ncurses pkgconfig readline python
+    pythonPackages.docutils];
 
   meta = {
     description = "Web application accelerator also known as a caching HTTP reverse proxy";

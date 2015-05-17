@@ -7,7 +7,7 @@
 
 { fetchurl, stdenv, lua, callPackage, unzip, zziplib, pkgconfig, libtool
 , pcre, oniguruma, gnulib, tre, glibc, sqlite, openssl, expat, cairo
-, perl, gtk, python, glib, gobjectIntrospection
+, perl, gtk, python, glib, gobjectIntrospection, libevent, zlib
 }:
 
 let
@@ -50,6 +50,36 @@ let
     };
   };
 
+  luaevent = buildLuaPackage rec {
+    version = "0.4.3";
+    name = "luaevent-${version}";
+    disabled = isLua52;
+
+    src = fetchurl {
+      url = "https://github.com/harningt/luaevent/archive/v${version}.tar.gz";
+      sha256 = "1ifr949j9xaas0jk0nxpilb44dqvk4c5h4m7ccksz5da3iksfgls";
+    };
+
+    preBuild = ''
+      makeFlagsArray=(
+        INSTALL_DIR_LUA="$out/share/lua/${lua.luaversion}"
+        INSTALL_DIR_BIN="$out/lib/lua/${lua.luaversion}"
+        LUA_INC_DIR="${lua}/include"
+      );
+    '';
+
+    buildInputs = [ libevent ];
+
+    propagatedBuildInputs = [ luasocket ];
+
+    meta = with stdenv.lib; {
+      homepage = http://luaforge.net/projects/luaevent/;
+      description = "Binding of libevent to Lua.";
+      license = licenses.mit;
+      maintainers = [ maintainers.koral ];
+    };
+  };
+
   luaexpat = buildLuaPackage rec {
     version = "1.3.0";
     name = "expat-${version}";
@@ -86,6 +116,29 @@ let
       hydraPlatforms = stdenv.lib.platforms.linux;
       maintainers = with maintainers; [ flosse ];
     };
+  };
+
+  lpty = buildLuaPackage rec {
+    name = "lpty-${version}";
+    version = "1.1.1";
+    src = fetchurl {
+      url = "http://www.tset.de/downloads/lpty-1.1-1.tar.gz";
+      sha256 = "0d4ffda654dcf37dd8c99bcd100d0ee0dde7782cbd0ba9200ef8711c5cab02f1";
+    };
+    meta = {
+      homepage = "http://www.tset.de/lpty";
+      hydraPlatforms = stdenv.lib.platforms.linux;
+      license = stdenv.lib.licenses.mit;
+    };
+    preBuild = ''
+      makeFlagsArray=(
+        INST_LIBDIR="$out/lib/lua/${lua.luaversion}"
+        INST_LUADIR="$out/share/lua/${lua.luaversion}"
+        LUA_BINDIR="${lua}/bin"
+        LUA_INCDIR="-I${lua}/include"
+        LUA_LIBDIR="-L${lua}/lib"
+        );
+    '';
   };
 
   luasec = buildLuaPackage rec {
@@ -151,6 +204,37 @@ let
       license = stdenv.lib.licenses.mit;
     };
   };
+
+  luazlib = buildLuaPackage rec {
+    name = "zlib-${version}";
+    version = "0.4";
+
+    src = fetchurl {
+      url = "https://github.com/brimworks/lua-zlib/archive/v${version}.tar.gz";
+      sha256 = "1l32nwyh8b4vicxvlhbv9qhkhklbhvjfn8wd72bjk7ac9kz172rd";
+    };
+
+    buildInputs = [ zlib ];
+
+    preBuild = ''
+      makeFlagsArray=(
+        linux
+        LUAPATH="$out/share/lua/${lua.luaversion}"
+        LUACPATH="$out/lib/lua/${lua.luaversion}"
+        INCDIR="-I${lua}/include"
+        LIBDIR="-L$out/lib");
+    '';
+
+    preInstall = "mkdir -p $out/lib/lua/${lua.luaversion}";
+
+    meta = with stdenv.lib; {
+      homepage = https://github.com/brimworks/lua-zlib;
+      hydraPlatforms = platforms.linux;
+      license = licenses.mit;
+      maintainers = [ maintainers.koral ];
+    };
+  };
+      
 
   luastdlib = buildLuaPackage {
     name = "stdlib";
@@ -229,6 +313,12 @@ let
     };
     buildInputs = [ unzip ];
 
+    preBuild = ''
+      makeFlagsArray=(CC=$CC);
+    '';
+
+    buildFlags = if stdenv.isDarwin then "macosx" else "";
+
     installPhase = ''
       mkdir -p $out/lib/lua/${lua.luaversion}
       install -p lpeg.so $out/lib/lua/${lua.luaversion}
@@ -237,7 +327,28 @@ let
 
     meta = {
       homepage = "http://www.inf.puc-rio.br/~roberto/lpeg/";
-      hydraPlatforms = stdenv.lib.platforms.linux;
+      hydraPlatforms = stdenv.lib.platforms.all;
+      license = stdenv.lib.licenses.mit;
+    };
+  };
+
+  cjson = buildLuaPackage rec {
+    name = "cjson-${version}";
+    version = "2.1.0";
+    src = fetchurl {
+      url = "http://www.kyne.com.au/~mark/software/download/lua-cjson-2.1.0.tar.gz";
+      sha256 = "0y67yqlsivbhshg8ma535llz90r4zag9xqza5jx0q7lkap6nkg2i";
+    };
+    preBuild = ''
+      sed -i "s|/usr/local|$out|" Makefile
+    '';
+    makeFlags = [ "LUA_VERSION=${lua.luaversion}" ];
+    postInstall = ''
+      rm -rf $out/share/lua/${lua.luaversion}/cjson/tests
+    '';
+    installTargets = "install install-extra";
+    meta = {
+      description = "Lua C extension module for JSON support";
       license = stdenv.lib.licenses.mit;
     };
   };

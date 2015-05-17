@@ -10,21 +10,21 @@
 , bison, flex, zip, unzip, gtk, libmspack, getopt, file, cairo, which
 , icu, boost, jdk, ant, cups, xorg
 , openssl, gperf, cppunit, GConf, ORBit2, poppler
-, librsvg, gnome_vfs, gstreamer, gst_plugins_base, mesa
+, librsvg, gnome_vfs, mesa
 , autoconf, automake, openldap, bash, hunspell, librdf_redland, nss, nspr
 , libwpg, dbus_glib, glibc, qt4, kde4, clucene_core, libcdr, lcms, vigra
 , unixODBC, mdds, saneBackends, mythes, libexttextcat, libvisio
 , fontsConf, pkgconfig, libzip, bluez5, libtool, maven
-, libatomic_ops, graphite2, harfbuzz
-, librevenge, libe-book, libmwaw, glm, glew
+, libatomic_ops, graphite2, harfbuzz, libodfgen
+, librevenge, libe-book, libmwaw, glm, glew, gst_all_1
 , langs ? [ "en-US" "en-GB" "ca" "ru" "eo" "fr" "nl" "de" "sl" ]
 }:
 
 let
   langsSpaces = stdenv.lib.concatStringsSep " " langs;
   major = "4";
-  minor = "3";
-  patch = "5";
+  minor = "4";
+  patch = "2";
   tweak = "2";
   subdir = "${major}.${minor}.${patch}";
   version = "${subdir}${if tweak == "" then "" else "."}${tweak}";
@@ -61,7 +61,7 @@ let
       ("Error: update liborcus version inside LO expression")
       (import ./libreoffice-srcs.nix));
 
-    buildInputs = [ boost mdds pkgconfig zlib libixion ];
+    buildInputs = [ boost mdds pkgconfig zlib /*libixion*/ ];
 
     configureFlags = [ "--with-boost=${boost.dev}" ];
   };
@@ -80,14 +80,14 @@ let
 
     translations = fetchSrc {
       name = "translations";
-      sha256 = "0xqvfmfab0hq3hcq76hs7ybv32i02lzl8xghilbjf12k1wgqy96c";
+      sha256 = "0m1a09vzgh5mz0dgx2ji3fwmsqr7xymr0hhrrhf75nd1dr0blv2s";
     };
 
     # TODO: dictionaries
 
     help = fetchSrc {
       name = "help";
-      sha256 = "14kdhd9pjy0a7dkyx03a73m5iy3qr3ki2xqkinhml24f3n9qddbq";
+      sha256 = "06i2c143dpqm4w1a9nba0gn1ayrvrhdrcm2kydzapvljgljqswkh";
     };
 
   };
@@ -97,7 +97,7 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "http://download.documentfoundation.org/libreoffice/src/${subdir}/libreoffice-${version}.tar.xz";
-    sha256 = "0dr6xzdnnyhhysayz1yhnmv0l3c14kpnlhwd5h66qyzkd4d85rkq";
+    sha256 = "0dif783zbh9qb4636mm055clwwsv8j6pmb8msi9lr183drnaw73x";
   };
 
   # Openoffice will open libcups dynamically, so we link it directly
@@ -211,13 +211,12 @@ stdenv.mkDerivation rec {
     # Modified on every upgrade, though
     "--disable-kde"
     "--disable-postgresql-sdbc"
-    "--with-package-format=native"
+    "--with-package-format=installed"
     "--enable-epm"
     "--with-jdk-home=${jdk.home}"
     "--with-ant-home=${ant}/lib/ant"
     "--without-fonts"
     "--without-myspell-dicts"
-    "--without-ppds"
     "--without-system-beanshell"
     "--without-system-hsqldb"
     "--without-system-jars"
@@ -228,11 +227,16 @@ stdenv.mkDerivation rec {
 
     "--without-system-libetonyek"
     "--without-system-libfreehand"
-    "--without-system-libodfgen"
     "--without-system-libabw"
     "--without-system-firebird"
     "--without-system-liblangtag"
     "--without-system-libmspub"
+
+    "--without-system-libpagemaker"
+    "--without-system-coinmp"
+    "--without-system-libgltf"
+
+    "--without-system-orcus"
   ];
 
   checkPhase = ''
@@ -243,17 +247,18 @@ stdenv.mkDerivation rec {
   buildInputs = with xorg;
     [ ant ArchiveZip autoconf automake bison boost cairo clucene_core
       CompressZlib cppunit cups curl db dbus_glib expat file flex fontconfig
-      freetype GConf getopt gnome_vfs gperf gst_plugins_base gstreamer gtk
+      freetype GConf getopt gnome_vfs gperf gtk
       hunspell icu jdk kde4.kdelibs lcms libcdr libexttextcat unixODBC libjpeg
       libmspack librdf_redland librsvg libsndfile libvisio libwpd libwpg libX11
       libXaw libXext libXi libXinerama libxml2 libxslt libXtst
-      libXdmcp libpthreadstubs mesa mythes
+      libXdmcp libpthreadstubs mesa mythes gst_all_1.gstreamer 
+      gst_all_1.gst-plugins-base
       neon nspr nss openldap openssl ORBit2 pam perl pkgconfigUpstream poppler
       python3 sablotron saneBackends tcsh unzip vigra which zip zlib
-      mdds bluez5 glibc libixion
+      mdds bluez5 glibc /*libixion*/
       libxshmfence libatomic_ops graphite2 harfbuzz
       librevenge libe-book libmwaw glm glew
-      liborcus
+      /*liborcus*/ libodfgen
     ];
 
   meta = with stdenv.lib; {

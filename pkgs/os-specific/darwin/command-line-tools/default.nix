@@ -1,71 +1,45 @@
-{ stdenv, fetchadc, xar, gzip, cpio }:
+{ stdenv, fetchurl, xar, gzip, cpio }:
 
 let
-  name = "command-line-tools-mac-os-10.9";
-
-  pkg = { installPhase }: stdenv.mkDerivation {
-    name = "${name}.pkg";
-
-    phases = [ "installPhase" ];
-
-    inherit installPhase;
-
-    meta = with stdenv.lib; {
-      description = "Developer tools .pkg file";
-      maintainers = with maintainers; [ copumpkin ];
-      platforms   = platforms.darwin;
-      license     = licenses.unfree;
-    };
-  };
-
-  basic = pkg: stdenv.mkDerivation {
+  pkg = { name, sha256 }: stdenv.mkDerivation {
     inherit name;
+
+    src = fetchurl {
+      # Magic url found in:
+      # https://swscan.apple.com/content/catalogs/others/index-10.9-1.sucatalog
+      url = "http://swcdn.apple.com/content/downloads/27/02/031-06182/yiervn212jfs091cp9hwmb7gjq7ky91crs/${name}.pkg";
+      inherit sha256;
+    };
+
+    buildInputs = [ xar gzip cpio ];
 
     phases = [ "unpackPhase" "installPhase" ];
 
-    outputs = [ "sdk" "tools" ];
-
     unpackPhase = ''
-      ${xar}/bin/xar -x -f "${pkg}"
+      xar -x -f $src
     '';
 
     installPhase = ''
       start="$(pwd)"
-      mkdir -p $sdk
-      mkdir -p $tools
-
-      cd $sdk
-      cat $start/DevSDK_OSX109.pkg/Payload | ${gzip}/bin/gzip -d | ${cpio}/bin/cpio -idm
-
-      cd $tools
-      cat $start/CLTools_Executables.pkg/Payload | ${gzip}/bin/gzip -d | ${cpio}/bin/cpio -idm
+      mkdir -p $out
+      cd $out
+      cat $start/Payload | gzip -d | cpio -idm
     '';
 
     meta = with stdenv.lib; {
-      description = "Mac OS command-line developer tools and SDK";
+      description = "Apple developer tools ${name}";
       maintainers = with maintainers; [ copumpkin ];
       platforms   = platforms.darwin;
-      license     = licenses.unfree;
     };
   };
 in rec {
-  dmg = fetchadc {
-    # Isn't this a beautiful path? Note the subtle differences before and after the slash!
-    path   = "Developer_Tools/command_line_tools_os_x_10.9_for_xcode__xcode_6/command_line_tools_for_os_x_10.9_for_xcode_6.dmg";
-    sha256 = "0zrpf73r3kfk9pdh6p6j6w1sbw7s2pp0f8rd83660r5hk1y3j5jc";
+  tools = pkg {
+    name   = "CLTools_Executables_OSX109";
+    sha256 = "1cjdnnjny6h0dc1cc994pgrkmsa5cvk7pi5dpkxyslyicwf260fx";
   };
 
-  pure = { xpwn }: basic (pkg {
-    installPhase = ''
-      ${xpwn}/bin/hdutil ${dmg} extract "Command Line Tools (OS X 10.9).pkg" $out
-    '';
-  });
-
-  impure = basic (pkg {
-    installPhase = ''
-      /usr/bin/hdiutil attach ${dmg} -mountpoint clt-mount -nobrowse
-      cp "clt-mount/Command Line Tools (OS X 10.9).pkg" $out
-      /usr/bin/hdiutil unmount clt-mount
-    '';
-  });
+  sdk = pkg {
+    name   = "DevSDK_OSX109";
+    sha256 = "16b7aplha5573yl1d44nl2yxzp0w2hafihbyh7930wrcvba69iy4";
+  };
 }

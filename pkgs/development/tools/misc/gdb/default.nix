@@ -8,7 +8,7 @@
 
 let
 
-  basename = "gdb-7.8";
+  basename = "gdb-7.9";
 
   # Whether (cross-)building for GNU/Hurd.  This is an approximation since
   # having `stdenv ? cross' doesn't tell us if we're building `crossDrv' and
@@ -27,17 +27,17 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "mirror://gnu/gdb/${basename}.tar.xz";
-    sha256 = "49c4abe174f79f54e1f9e75210ffb590d9b497d5b5200b5398c0e073a4ecb875";
+    sha256 = "14l3hhsy7fmpn2dk7ivc67gnbjdhkxlq90kxijpzfa35l58mcccv";
   };
 
-  patches = [ ./edit-signals.patch ];
+  # patches = [ ./edit-signals.patch ];
 
   # I think python is not a native input, but I leave it
   # here while I will not need it cross building
   nativeBuildInputs = [ texinfo python perl ]
     ++ stdenv.lib.optional isGNU mig;
 
-  buildInputs = [ ncurses readline gmp mpfr expat pkgconfig guile ]
+  buildInputs = [ ncurses readline gmp mpfr expat /* pkgconfig guile */ ]
     ++ stdenv.lib.optional isGNU hurd
     ++ stdenv.lib.optional doCheck dejagnu;
 
@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
 
   postInstall =
     '' # Remove Info files already provided by Binutils and other packages.
-       rm -v $out/share/info/{standards,configure,bfd}.info
+       rm -v $out/share/info/bfd.info
     '';
 
   # TODO: Investigate & fix the test failures.

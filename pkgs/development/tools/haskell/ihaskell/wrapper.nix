@@ -1,24 +1,23 @@
-{ stdenv, makeWrapper, ihaskell, ipython, ghc }:
-
-stdenv.mkDerivation rec {
-
-  inherit (ihaskell) name;
-
-  buildInputs = [ makeWrapper ];
-
-  preferLocalBuild = true;
-
-  buildCommand = ''
-    makeWrapper "${ihaskell}/bin/IHaskell" "$out/bin/ihaskell" \
-      --prefix PATH : "${ghc}/bin:${ihaskell}/bin:${ipython}/bin" \
-      --prefix LD_LIBRARY_PATH : "${ihaskell}/lib/ghc-${ghc.version}/${name}/" \
-      --add-flags "--ipython=${ipython}/bin/ipython" \
-      --set PROFILE_DIR "\$HOME/.ipython/profile_haskell" \
-      --set PROFILE_TAR "$(find ${ihaskell} -iname "profile.tar")" \
-      --set PROFILE_INIT "\$([ ! -d \$PROFILE_DIR ] && mkdir -p \$PROFILE_DIR && tar xvf \$PROFILE_TAR -C \$PROFILE_DIR)" \
-      --prefix GHC_PACKAGE_PATH : "\$(${ghc.GHCGetPackages} ${ghc.version}|sed -e 's, -package-db ,:,g'|cut -b 2-):${ihaskell}/lib/ghc-${ghc.version}/package.conf.d/${name}.installedconf" \
-      --set GHC_PACKAGE_PATH "\$GHC_PACKAGE_PATH:" # always end with : to include base packages
+{ stdenv, writeScriptBin, buildEnv, ghcWithPackages, ihaskell, ipython, packages }:
+let
+  ihaskellEnv = ghcWithPackages (self: [
+    self.ihaskell
+    self.ihaskell-blaze
+    self.ihaskell-diagrams
+    self.ihaskell-display
+  ] ++ packages self);
+  ihaskellSh = writeScriptBin "ihaskell-notebook" ''
+    #!/bin/sh
+    export GHC_PACKAGE_PATH="$(echo ${ihaskellEnv}/lib/*/package.conf.d| tr ' ' ':'):$GHC_PACKAGE_PATH"
+    export PATH="${ihaskell}/bin:${ihaskellEnv}/bin:${ipython}/bin"
+    ${ihaskell}/bin/ihaskell install -l $(${ihaskellEnv}/bin/ghc --print-libdir) && ${ipython}/bin/ipython notebook --kernel=haskell
   '';
-
-  inherit (ihaskell) meta;
+  profile = "${ihaskell.pname}-${ihaskell.version}/profile/profile.tar";
+in
+buildEnv {
+  name = "ihaskell-with-packages";
+  paths = [ ihaskellEnv ipython ];
+  postBuild = ''
+    ln -s ${ihaskellSh}/bin/ihaskell-notebook $out/bin/.
+  '';
 }

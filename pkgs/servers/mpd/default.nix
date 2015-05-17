@@ -19,20 +19,23 @@
 , aacSupport ? true, faad2
 , pulseaudioSupport ? true, pulseaudio
 , jackSupport ? true, jack2
+, gmeSupport ? true, game-music-emu
 , icuSupport ? true, icu
+, clientSupport ? false, mpd_clientlib
+, opusSupport ? true, libopus
 }:
 
 let
   opt = stdenv.lib.optional;
   mkFlag = c: f: if c then "--enable-${f}" else "--disable-${f}";
   major = "0.19";
-  minor = "6";
+  minor = "9";
 
 in stdenv.mkDerivation rec {
   name = "mpd-${major}.${minor}";
   src = fetchurl {
-    url    = "http://www.musicpd.org/download/mpd/${major}/${name}.tar.gz";
-    sha256 = "023h2d9x4yg1z2glnwf8h2j0p1xhn1hb0wf02mg70j3p0bz63imj";
+    url    = "http://www.musicpd.org/download/mpd/${major}/${name}.tar.xz";
+    sha256 = "0vzj365s4j0pw5w37lfhx3dmpkdp85driravsvx8rlrw0lii91a7";
   };
 
   buildInputs = [ pkgconfig glib boost ]
@@ -59,7 +62,10 @@ in stdenv.mkDerivation rec {
     ++ opt zipSupport zziplib
     ++ opt pulseaudioSupport pulseaudio
     ++ opt jackSupport jack2
-    ++ opt icuSupport icu;
+    ++ opt gmeSupport game-music-emu
+    ++ opt icuSupport icu
+    ++ opt clientSupport mpd_clientlib
+    ++ opt opusSupport libopus;
 
   configureFlags =
     [ (mkFlag (!stdenv.isDarwin && alsaSupport) "alsa")
@@ -85,6 +91,9 @@ in stdenv.mkDerivation rec {
       (mkFlag jackSupport "jack")
       (mkFlag stdenv.isDarwin "osx")
       (mkFlag icuSupport "icu")
+      (mkFlag gmeSupport "gme")
+      (mkFlag clientSupport "libmpdclient")
+      (mkFlag opusSupport "opus")
       "--enable-debug"
     ]
     ++ opt stdenv.isLinux
@@ -98,7 +107,7 @@ in stdenv.mkDerivation rec {
     description = "A flexible, powerful daemon for playing music";
     homepage    = http://mpd.wikia.com/wiki/Music_Player_Daemon_Wiki;
     license     = licenses.gpl2;
-    maintainers = with maintainers; [ astsmtl fuuzetsu ];
+    maintainers = with maintainers; [ astsmtl fuuzetsu emery ];
     platforms   = platforms.unix;
 
     longDescription = ''

@@ -13,6 +13,13 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
+<<<<<<< HEAD
+=======
+  postInstall = ''
+    mv -v $out/share/man/man1/coan.1.{1,gz}
+  '';
+
+>>>>>>> bff10518909f22ba90f027e6e40224b3cf2504ce
   meta = with stdenv.lib; {
     description = "The C preprocessor chainsaw";
     longDescription = ''
@@ -24,7 +31,11 @@ stdenv.mkDerivation rec {
     '';
     homepage = http://coan2.sourceforge.net/;
     license = with licenses; bsd3;
+<<<<<<< HEAD
     platforms = with platforms; all;
+=======
+    platforms = with platforms; linux;
+>>>>>>> bff10518909f22ba90f027e6e40224b3cf2504ce
     maintainers = with maintainers; [ nckx ];
   };
 }
