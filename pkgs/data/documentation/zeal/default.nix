@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "1057py3j2flzxyiks031s0mwm9h82v033iqn5cq8sycmrb3ihj2s";
   };
 
-  buildInputs = [ pkgconfig qt5 libarchive ];
+  buildInputs = [ pkgconfig qt5.base qt5.webkit libarchive ];
 
   patchPhase = ''
     substituteInPlace src/main.cpp \
@@ -36,13 +36,13 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   meta = {
-    description = "Zeal is a simple offline API documentation browser";
+    description = "A simple offline API documentation browser";
     longDescription = ''
       Zeal is a simple offline API documentation browser inspired by Dash (OS X
       app), available for Linux and Windows.
     '';
     homepage = "http://zealdocs.org/";
-    licenses = with stdenv.lib.licenses; [ gpl3 ];
+    license = with stdenv.lib.licenses; [ gpl3 ];
     platforms = stdenv.lib.platforms.linux;
     maintainers = with stdenv.lib.maintainers; [ skeidel ];
   };

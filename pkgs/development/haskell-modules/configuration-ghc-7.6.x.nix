@@ -33,12 +33,11 @@ self: super: {
   time = null;
   unix = null;
 
-  # transformers is not a core library for this compiler.
-  transformers = self.transformers_0_4_3_0;
-
-  # haskeline and terminfo are not core libraries for this compiler.
+  # These packages are core libraries in GHC 7.10.x, but not here.
   haskeline = self.haskeline_0_7_2_1;
   terminfo = self.terminfo_0_4_0_1;
+  transformers = self.transformers_0_4_3_0;
+  xhtml = self.xhtml_3000_2_1;
 
   # https://github.com/haskell/cabal/issues/2322
   Cabal_1_22_3_0 = super.Cabal_1_22_3_0.override { binary = self.binary_0_7_4_0; };
@@ -76,5 +75,17 @@ self: super: {
 
   # Needs hashable on pre 7.10.x compilers.
   nats = addBuildDepend super.nats self.hashable;
+
+  # Newer versions always trigger the non-deterministic library ID bug
+  # and are virtually impossible to compile on Hydra.
+  conduit = super.conduit_1_2_4_1;
+
+  # https://github.com/magthe/sandi/issues/7
+  sandi = overrideCabal super.sandi (drv: {
+    patchPhase = "sed -i -e 's|base ==4.8.*,|base,|' sandi.cabal"; }
+  );
+
+  # blaze-builder requires an additional build input on older compilers.
+  blaze-builder = addBuildDepend super.blaze-builder super.bytestring-builder;
 
 }

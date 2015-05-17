@@ -20,7 +20,7 @@ let lispPackages = rec {
   clx = buildLispPackage rec {
     baseName = "clx";
     version = "git-20150117";
-    description = "An implementation of the X Window System protocol in Lisp.";
+    description = "An implementation of the X Window System protocol in Lisp";
     deps = [];
     # Source type: git
     src = pkgs.fetchgit {
@@ -37,7 +37,7 @@ let lispPackages = rec {
     description = "Iteration package for Common Lisp";
     deps = [];
     src = (pkgs.lib.overrideDerivation (pkgs.fetchdarcs {
-      url = "http://common-lisp.net/project/iterate/darcs/iterate";
+      url = "https://common-lisp.net/project/iterate/darcs/iterate";
       sha256 = "0gm05s3laiivsqgqjfj1rkz83c2c0jyn4msfgbv6sz42znjpam25";
       context = ./iterate.darcs-context;
     }) (x: {SSL_CERT_FILE=pkgs.cacert + "/etc/ca-bundle.crt";}));
@@ -98,7 +98,7 @@ let lispPackages = rec {
   clx-truetype = buildLispPackage rec {
     baseName = "clx-truetype";
     version = "git-20141112";
-    description = "clx-truetype is pure common lisp solution for antialiased TrueType font rendering using CLX and XRender extension.";
+    description = "A pure Common Lisp solution for antialiased TrueType font rendering using CLX and the XRender extension";
     deps = [cl-fad cl-store cl-vectors clx trivial-features zpb-ttf];
     # Source type: git
     src = pkgs.fetchgit {
@@ -178,7 +178,7 @@ let lispPackages = rec {
   trivial-features = buildLispPackage rec {
     baseName = "trivial-features";
     version = "git-20141112";
-    description = "Ensures consistent *FEATURES* across multiple CLs.";
+    description = "Ensures consistent *FEATURES* across multiple CLs";
     deps = [];
     # Source type: git
     src = pkgs.fetchgit {
@@ -190,15 +190,18 @@ let lispPackages = rec {
 
   clsql = buildLispPackage rec {
     baseName = "clsql";
-    version = "git-20141112";
+    version = "git-20150514";
     description = "Common Lisp SQL Interface library";
     deps = [uffi];
     buildInputs = [pkgs.mysql.lib pkgs.zlib];
     # Source type: git
     src = pkgs.fetchgit {
-      url = ''http://git.b9.com/clsql.git'';
-      sha256 = "dacd56bc9a0348e8101184bf154b971407a98f3a753d7cce34c7a44b4b19f8fd";
-      rev = ''180b52cb686a87487e12e87b13bafe131e6c3bef'';
+      url =
+        #''http://git.b9.com/clsql.git''
+	"http://repo.or.cz/r/clsql.git"
+	;
+      sha256 = "1wzc7qsnq8hk0j0h9jmj4xczmh7h6njafwab2zylh8wxmfzwp2nw";
+      rev = ''a646f558b54191eda1d64f2926eee7b4fa763f89'';
     };
     overrides = x:{
       preConfigure = ''
@@ -280,7 +283,7 @@ let lispPackages = rec {
   babel = buildLispPackage rec {
     baseName = "babel";
     version = "git-20141113";
-    description = "Babel, a charset conversion library.";
+    description = "A charset conversion library";
     deps = [alexandria trivial-features];
     # Source type: git
     src = pkgs.fetchgit {
@@ -408,7 +411,7 @@ let lispPackages = rec {
   trivial-gray-streams = buildLispPackage rec {
     baseName = "trivial-gray-streams";
     version = "git-20141113";
-    description = "Compatibility layer for Gray Streams (see http://www.cliki.net/Gray%20streams).";
+    description = "Compatibility layer for Gray Streams (see http://www.cliki.net/Gray%20streams)";
     deps = [];
     # Source type: git
     src = pkgs.fetchgit {
@@ -421,7 +424,7 @@ let lispPackages = rec {
   cl-ssl = buildLispPackage rec {
     baseName = "cl+ssl";
     version = "git-20141113";
-    description = "Common Lisp interface to OpenSSL.";
+    description = "Common Lisp interface to OpenSSL";
     deps = [bordeaux-threads cffi flexi-streams trivial-garbage trivial-gray-streams];
     # Source type: git
     src = pkgs.fetchgit {
@@ -448,7 +451,7 @@ let lispPackages = rec {
   trivial-garbage = buildLispPackage rec {
     baseName = "trivial-garbage";
     version = "git-20141113";
-    description = "Portable finalizers, weak hash-tables and weak pointers.";
+    description = "Portable finalizers, weak hash-tables and weak pointers";
     deps = [];
     # Source type: git
     src = pkgs.fetchgit {
@@ -461,7 +464,7 @@ let lispPackages = rec {
   cl-base64 = buildLispPackage rec {
     baseName = "cl-base64";
     version = "git-20141113";
-    description = "Base64 encoding and decoding with URI support.";
+    description = "Base64 encoding and decoding with URI support";
     deps = [];
     # Source type: git
     src = pkgs.fetchgit {

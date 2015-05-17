@@ -6,11 +6,11 @@
 
 let
 
-  name = "hplip-3.15.2";
+  name = "hplip-3.15.4";
 
   src = fetchurl {
     url = "mirror://sourceforge/hplip/${name}.tar.gz";
-    sha256 = "0z7n62vdbr0p0kls1m2sr3nhvkhx3rawcbzd0zdl0lnq8fkyq0jz";
+    sha256 = "0s1yiifp002n8qy0i4cv6j0hq9ikp4jabki5w3xzlaqgd4bjz1x3";
   };
 
   hplip_state =
@@ -21,9 +21,17 @@ let
         version = (builtins.parseDrvName name).version;
       };
 
+  hplip_arch =
+    {
+      "i686-linux" = "x86_32";
+      "x86_64-linux" = "x86_64";
+      "arm6l-linux" = "arm32";
+      "arm7l-linux" = "arm32";
+    }."${stdenv.system}" or (abort "Unsupported platform ${stdenv.system}");
+
   plugin = fetchurl {
     url = "http://www.openprinting.org/download/printdriver/auxfiles/HP/plugins/${name}-plugin.run";
-    sha256 = "0j8z8m3ygwahka7jv3hpzvfz187lh3kzzjhcy7grgaw2k01v5frm";
+    sha256 = "00zhaq48m7p6nrxfy16086hzghf2pfr32s53sndbpp2514v2j392";
   };
 
 in
@@ -33,12 +41,14 @@ stdenv.mkDerivation {
 
   prePatch = ''
     # HPLIP hardcodes absolute paths everywhere. Nuke from orbit.
-    find . -type f -exec sed -i s,/etc/hp,$out/etc/hp, {} \;
-    find . -type f -exec sed -i s,/etc/sane.d,$out/etc/sane.d, {} \;
-    find . -type f -exec sed -i s,/usr/include/libusb-1.0,${libusb1}/include/libusb-1.0, {} \;
-    find . -type f -exec sed -i s,/usr/share/hal/fdi/preprobe/10osvendor,$out/share/hal/fdi/preprobe/10osvendor, {} \;
-    find . -type f -exec sed -i s,/usr/lib/systemd/system,$out/lib/systemd/system, {} \;
-    find . -type f -exec sed -i s,/var/lib/hp,$out/var/lib/hp, {} \;
+    find . -type f -exec sed -i \
+      -e s,/etc/hp,$out/etc/hp, \
+      -e s,/etc/sane.d,$out/etc/sane.d, \
+      -e s,/usr/include/libusb-1.0,${libusb1}/include/libusb-1.0, \
+      -e s,/usr/share/hal/fdi/preprobe/10osvendor,$out/share/hal/fdi/preprobe/10osvendor, \
+      -e s,/usr/lib/systemd/system,$out/lib/systemd/system, \
+      -e s,/var/lib/hp,$out/var/lib/hp, \
+      {} +
   '';
 
   preConfigure = ''
@@ -133,7 +143,7 @@ stdenv.mkDerivation {
     license = if withPlugin
       then licenses.unfree
       else with licenses; [ mit bsd2 gpl2Plus ];
-    platforms = platforms.linux;
+    platforms = [ "i686-linux" "x86_64-linux" "armv6l-linux" "armv7l-linux" ];
     maintainers = with maintainers; [ ttuegel jgeerds ];
   };
 }

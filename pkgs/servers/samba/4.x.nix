@@ -1,6 +1,6 @@
 { stdenv, fetchurl, python, pkgconfig, perl, libxslt, docbook_xsl
 , docbook_xml_dtd_42, docbook_xml_dtd_45, readline, talloc, ntdb, tdb, tevent
-, ldb, popt, iniparser, pythonPackages, libbsd, nss_wrapper, socket_wrapper
+, ldb, popt, iniparser, subunit, libbsd, nss_wrapper, socket_wrapper
 , uid_wrapper, libarchive
 
 # source3/wscript optionals
@@ -13,7 +13,7 @@
 , acl ? null
 , libaio ? null
 , fam ? null
-, ceph ? null
+, libceph ? null
 , glusterfs ? null
 
 # buildtools/wafsamba/wscript optionals
@@ -65,10 +65,10 @@ stdenv.mkDerivation rec {
   buildInputs = [
     python pkgconfig perl libxslt docbook_xsl docbook_xml_dtd_42
     docbook_xml_dtd_45 readline talloc ntdb tdb tevent ldb popt iniparser
-    pythonPackages.subunit libbsd nss_wrapper socket_wrapper uid_wrapper
+    subunit libbsd nss_wrapper socket_wrapper uid_wrapper
     libarchive
 
-    kerberos zlib openldap cups pam avahi acl libaio fam ceph glusterfs
+    kerberos zlib openldap cups pam avahi acl libaio fam libceph glusterfs
 
     libiconv gettext
 
@@ -114,7 +114,7 @@ stdenv.mkDerivation rec {
     (mkWith   (libarchive != null) "libarchive"        null)
     (mkWith   true                 "cluster-support"   null)
     (mkWith   (ncurses != null)    "regedit"           null)
-    (mkWith   ceph                 "libcephfs"         ceph)
+    (mkWith   libceph              "libcephfs"         libceph)
     (mkEnable (glusterfs != null)  "glusterfs"         null)
 
     # dynconfig/wscript options

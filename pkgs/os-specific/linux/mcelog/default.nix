@@ -1,21 +1,24 @@
 { stdenv, fetchFromGitHub }:
 
-let version = "114"; in
+let version = "117"; in
 stdenv.mkDerivation {
   name = "mcelog-${version}";
 
   src = fetchFromGitHub {
-    sha256 = "1blxz5ilrlh2030gxmfqlhcb53qh2bxp5nxyc97m1z8a52idjh0v";
+    sha256 = "0szc5s0bag16ypna336spwb5fagwbxaparn0h78w73wv05kcvwqw";
     rev = "v${version}";
     repo = "mcelog";
     owner = "andikleen";
   };
 
-  makeFlags = "prefix=$(out) etcprefix=$(out) DOCDIR=$(out)/share/doc";
-
-  preInstall = ''
-    mkdir -p $out/share/{doc,man/man{5,8}}
+  postPatch = ''
+    for i in mcelog.conf paths.h; do
+      substituteInPlace $i --replace /etc $out/etc
+    done
+    touch mcelog.conf.5 # avoid regeneration requiring Python
   '';
+
+  installFlags = "DESTDIR=$(out) prefix= DOCDIR=/share/doc";
 
   meta = with stdenv.lib; {
     inherit version;
