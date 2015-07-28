@@ -9,7 +9,7 @@
 assert withEditor -> wxGTK != null;
 
 let
-  version = "0.0.17";
+  version = "0.0.18";
 
   releaseType = "alpha";
 
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "http://releases.wildfiregames.com/0ad-${version}-${releaseType}-unix-build.tar.xz";
-    sha256 = "ef144d44fe8a8abd29a4642999a58a596b8f0d0e1f310065f5ce1dfbe29c3aeb";
+    sha256 = "0w2d4dqzjgvawdrhb0spp5a4v5y476hr7wkxpb4mmcrknvkp03fc";
   };
 
   buildInputs = [
