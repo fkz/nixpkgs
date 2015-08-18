@@ -1,5 +1,5 @@
 { stdenv, callPackage, fetchurl, python27
-, pkgconfig, spidermonkey_24, boost, icu, libxml2, libpng
+, pkgconfig, spidermonkey_31, boost, icu, libxml2, libpng
 , libjpeg, zlib, curl, libogg, libvorbis, enet, miniupnpc
 , openal, mesa, xproto, libX11, libXcursor, nspr, SDL
 , gloox, nvidia-texture-tools
@@ -25,11 +25,11 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "http://releases.wildfiregames.com/0ad-${version}-${releaseType}-unix-build.tar.xz";
-    sha256 = "0w2d4dqzjgvawdrhb0spp5a4v5y476hr7wkxpb4mmcrknvkp03fc";
+    sha256 = "15q3mv5k3lqzf0wrby2r93fs194ym13790i68q8azscs4v9h8bxx";
   };
 
   buildInputs = [
-    zeroadData python27 pkgconfig spidermonkey_24 boost icu
+    zeroadData python27 pkgconfig spidermonkey_31 boost icu
     libxml2 libpng libjpeg zlib curl libogg libvorbis enet
     miniupnpc openal mesa xproto libX11 libXcursor nspr
     SDL gloox nvidia-texture-tools
@@ -39,6 +39,7 @@ stdenv.mkDerivation rec {
     "-I${xproto}/include/X11"
     "-I${libX11}/include/X11"
     "-I${libXcursor}/include/X11"
+    "-I${spidermonkey_31}/include/mozjs-31"
   ];
 
   configurePhase = ''
@@ -58,7 +59,7 @@ stdenv.mkDerivation rec {
       --with-system-nvtt \
       --with-system-enet \
       --with-system-miniupnpc \
-      --with-system-mozjs24 \
+      --with-system-mozjs31 \
       ${ if withEditor then "--atlas" else "" } \
       --collada \
       --bindir="$out"/bin \
