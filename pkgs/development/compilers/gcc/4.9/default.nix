@@ -56,12 +56,15 @@ assert langGo -> langCC;
 with stdenv.lib;
 with builtins;
 
-let version = "4.9.2";
+let version = "4.9.3";
 
     # Whether building a cross-compiler for GNU/Hurd.
     crossGNU = cross != null && cross.config == "i586-pc-gnu";
 
-    enableParallelBuilding = true;
+    # Builds of gfortran have failed with strange errors that we cannot reproduce
+    # (http://hydra.nixos.org/build/23951123). Our best guess is that the build
+    # system has bugs that are exposed by compiling with multiple threads.
+    enableParallelBuilding = !langFortran;
 
     patches = [ ]
       ++ optional enableParallelBuilding ../parallel-bconfig.patch
@@ -208,9 +211,11 @@ stdenv.mkDerivation ({
 
   builder = ../builder.sh;
 
+  outputs = [ "out" "info" ];
+
   src = fetchurl {
     url = "mirror://gnu/gcc/gcc-${version}/gcc-${version}.tar.bz2";
-    sha256 = "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810";
+    sha256 = "0zmnm00d2a1hsd41g34bhvxzvxisa2l584q3p447bd91lfjv4ci3";
   };
 
   inherit patches;
@@ -318,7 +323,7 @@ stdenv.mkDerivation ({
       " --with-gnu-as --without-gnu-ld "
       else ""}
     --enable-lto
-    ${if enableMultilib then "--disable-libquadmath" else "--disable-multilib"}
+    ${if enableMultilib then "--enable-multilib --disable-libquadmath" else "--disable-multilib"}
     ${if enableShared then "" else "--disable-shared"}
     ${if enablePlugin then "--enable-plugin" else "--disable-plugin"}
     ${optionalString (isl != null) "--with-isl=${isl}"}

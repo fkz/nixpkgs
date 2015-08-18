@@ -7,9 +7,8 @@
 
 { name ? "", stdenv, nativeTools, nativeLibc, nativePrefix ? ""
 , cc ? null, libc ? null, binutils ? null, coreutils ? null, shell ? stdenv.shell
-, zlib ? null, extraPackages ? []
+, zlib ? null, extraPackages ? [], extraBuildCommands ? ""
 , dyld ? null # TODO: should this be a setup-hook on dyld?
-, setupHook ? ./setup-hook.sh
 , isGNU ? false, isClang ? false
 }:
 
@@ -227,13 +226,14 @@ stdenv.mkDerivation {
     ''
 
     + ''
-      substituteAll ${setupHook} $out/nix-support/setup-hook.tmp
+      substituteAll ${./setup-hook.sh} $out/nix-support/setup-hook.tmp
       cat $out/nix-support/setup-hook.tmp >> $out/nix-support/setup-hook
       rm $out/nix-support/setup-hook.tmp
 
       substituteAll ${./add-flags} $out/nix-support/add-flags.sh
       cp -p ${./utils.sh} $out/nix-support/utils.sh
-    '';
+    ''
+    + extraBuildCommands;
 
   # The dynamic linker has different names on different Linux platforms.
   dynamicLinker =

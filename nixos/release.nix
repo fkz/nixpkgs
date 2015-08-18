@@ -176,10 +176,12 @@ in rec {
   # boot that system from uboot (like for the sheevaplug).
   # The pc variant helps preparing the expression for the system tarball
   # in a machine faster than the sheevpalug
+  /*
   system_tarball_pc = forAllSystems (system: makeSystemTarball {
     module = ./modules/installer/cd-dvd/system-tarball-pc.nix;
     inherit system;
   });
+  */
 
   # Provide container tarball for lxc, libvirt-lxc, docker-lxc, ...
   containerTarball = forAllSystems (system: makeSystemTarball {
@@ -243,7 +245,7 @@ in rec {
   tests.kde4 = callTest tests/kde4.nix {};
   tests.kubernetes = hydraJob (import tests/kubernetes.nix { system = "x86_64-linux"; });
   tests.latestKernel.login = callTest tests/login.nix { latestKernel = true; };
-  tests.lightdm = callTest tests/lightdm.nix {};
+  #tests.lightdm = callTest tests/lightdm.nix {};
   tests.login = callTest tests/login.nix {};
   #tests.logstash = callTest tests/logstash.nix {};
   tests.misc = callTest tests/misc.nix {};
@@ -330,7 +332,5 @@ in rec {
         services.postgresql.package = pkgs.postgresql93;
         environment.systemPackages = [ pkgs.php ];
       });
-
   };
-
 }

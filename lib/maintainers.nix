@@ -33,8 +33,10 @@
   auntie = "Jonathan Glines <auntieNeo@gmail.com>";
   avnik = "Alexander V. Nikolaev <avn@avnik.info>";
   aycanirican = "Aycan iRiCAN <iricanaycan@gmail.com>";
+  badi = "Badi' Abdul-Wahid <abdulwahidc@gmail.com>";
   balajisivaraman = "Balaji Sivaraman<sivaraman.balaji@gmail.com>";
   bbenoist = "Baptist BENOIST <return_0@live.com>";
+  bcarrell = "Brandon Carrell <brandoncarrell@gmail.com>";
   bcdarwin = "Ben Darwin <bcdarwin@gmail.com>";
   bdimcheff = "Brandon Dimcheff <brandon@dimcheff.com>";
   bennofs = "Benno Fünfstück <benno.fuenfstueck@gmail.com>";
@@ -69,6 +71,7 @@
   davidrusu = "David Rusu <davidrusu.me@gmail.com>";
   dbohdan = "Danyil Bohdan <danyil.bohdan@gmail.com>";
   DerGuteMoritz = "Moritz Heidkamp <moritz@twoticketsplease.de>";
+  desiderius = "Didier J. Devroye <didier@devroye.name>";
   devhell = "devhell <\"^\"@regexmail.net>";
   dezgeg = "Tuomas Tynkkynen <tuomas.tynkkynen@iki.fi>";
   dmalikov = "Dmitry Malikov <malikov.d.y@gmail.com>";
@@ -80,6 +83,7 @@
   eikek = "Eike Kettner <eike.kettner@posteo.de>";
   ellis = "Ellis Whitehead <nixos@ellisw.net>";
   emery = "Emery Hemingway <emery@vfemail.net>";
+  epitrochoid = "Mabry Cervin <mpcervin@uncg.edu>";
   ericbmerritt = "Eric Merritt <eric@afiniate.com>";
   ertes = "Ertugrul Söylemez <ertesx@gmx.de>";
   exlevan = "Alexey Levan <exlevan@gmail.com>";
@@ -117,6 +121,7 @@
   jagajaga = "Arseniy Seroka <ars.seroka@gmail.com>";
   jb55 = "William Casarin <bill@casarin.me>";
   jcumming = "Jack Cummings <jack@mudshark.org>";
+  jfb = "James Felix Black <james@yamtime.com>";
   jgeerds = "Jascha Geerds <jg@ekby.de>";
   jirkamarsik = "Jirka Marsik <jiri.marsik89@gmail.com>";
   joachifm = "Joachim Fasting <joachifm@fastmail.fm>";
@@ -127,12 +132,14 @@
   jwiegley = "John Wiegley <johnw@newartisans.com>";
   jwilberding = "Jordan Wilberding <jwilberding@afiniate.com>";
   jzellner = "Jeff Zellner <jeffz@eml.cc>";
+  kamilchm = "Kamil Chmielewski <kamil.chm@gmail.com>";
   kkallio = "Karn Kallio <tierpluspluslists@gmail.com>";
   koral = "Koral <koral@mailoo.org>";
   kovirobi = "Kovacsics Robert <kovirobi@gmail.com>";
   kragniz = "Louis Taylor <kragniz@gmail.com>";
   ktosiek = "Tomasz Kontusz <tomasz.kontusz@gmail.com>";
   lassulus = "Lassulus <lassulus@gmail.com>";
+  leonardoce = "Leonardo Cecchi <leonardo.cecchi@gmail.com>";
   lethalman = "Luca Bruno <lucabru@src.gnome.org>";
   lhvwb = "Nathaniel Baxter <nathaniel.baxter@gmail.com>";
   lihop = "Leroy Hopson <nixos@leroy.geek.nz>";
@@ -140,14 +147,18 @@
   linus = "Linus Arver <linusarver@gmail.com>";
   lnl7 = "Daiderd Jordan <daiderd@gmail.com>";
   lovek323 = "Jason O'Conal <jason@oconal.id.au>";
+  lsix = "Lancelot SIX <lsix@lancelotsix.com>";
   ludo = "Ludovic Courtès <ludo@gnu.org>";
   madjar = "Georges Dubus <georges.dubus@compiletoi.net>";
   magnetophon = "Bart Brouns <bart@magnetophon.nl>";
+  mahe = "Matthias Herrmann <matthias.mh.herrmann@gmail.com>";
+  makefu = "Felix Richter <makefu@syntax-fehler.de>";
   malyn = "Michael Alyn Miller <malyn@strangeGizmo.com>";
   manveru = "Michael Fellinger <m.fellinger@gmail.com>";
   marcweber = "Marc Weber <marco-oweber@gmx.de>";
   maurer = "Matthew Maurer <matthew.r.maurer+nix@gmail.com>";
   matejc = "Matej Cotman <cotman.matej@gmail.com>";
+  mathnerd314 = "Mathnerd314 <mathnerd314.gph+hs@gmail.com>";
   matthiasbeyer = "Matthias Beyer <mail@beyermatthias.de>";
   mbakke = "Marius Bakke <ymse@tuta.io>";
   meditans = "Carlo Nucera <meditans@gmail.com>";
@@ -169,6 +180,7 @@
   nslqqq = "Nikita Mikhailov <nslqqq@gmail.com>";
   obadz = "obadz <dav-nixos@odav.org>";
   ocharles = "Oliver Charles <ollie@ocharles.org.uk>";
+  odi = "Oliver Dunkl <oliver.dunkl@gmail.com>";
   offline = "Jaka Hudoklin <jakahudoklin@gmail.com>";
   olcai = "Erik Timan <dev@timan.info>";
   orbitz = "Malcolm Matalka <mmatalka@gmail.com>";
@@ -225,6 +237,7 @@
   sprock = "Roger Mason <rmason@mun.ca>";
   spwhitt = "Spencer Whitt <sw@swhitt.me>";
   stephenmw = "Stephen Weinberg <stephen@q5comm.com>";
+  szczyp = "Szczyp <qb@szczyp.com>";
   sztupi = "Attila Sztupak <attila.sztupak@gmail.com>";
   tailhook = "Paul Colomiets <paul@colomiets.name>";
   taktoa = "Remy Goldschmidt <taktoa@gmail.com>";

@@ -184,16 +184,11 @@ in
       hostKeys = mkOption {
         type = types.listOf types.attrs;
         default =
-          [ { path = "/etc/ssh/ssh_host_dsa_key";
-              type = "dsa";
-            }
-            { path = "/etc/ssh/ssh_host_ecdsa_key";
-              type = "ecdsa";
-              bits = 521;
-            }
-            { path = "/etc/ssh/ssh_host_ed25519_key";
-              type = "ed25519";
-            }
+          [ { type = "rsa"; bits = 4096; path = "/etc/ssh/ssh_host_rsa_key"; }
+            { type = "ed25519"; path = "/etc/ssh/ssh_host_ed25519_key"; }
+          ] ++ optionals (!versionAtLeast config.system.stateVersion "15.07")
+          [ { type = "dsa"; path = "/etc/ssh/ssh_host_dsa_key"; }
+            { type = "ecdsa"; bits = 521; path = "/etc/ssh/ssh_host_ecdsa_key"; }
           ];
         description = ''
           NixOS can automatically generate SSH host keys.  This option
@@ -244,13 +239,12 @@ in
           publicKey = mkOption {
             default = null;
             type = types.nullOr types.str;
+            example = "ecdsa-sha2-nistp521 AAAAE2VjZHN...UEPg==";
             description = ''
               The public key data for the host. You can fetch a public key
               from a running SSH server with the <command>ssh-keyscan</command>
               command. The public key should not include any host names, only
-              the key type and the key itself. It is allowed to add several
-              lines here, each line will be treated as type/key pair and the
-              host names will be prepended to each line.
+              the key type and the key itself.
             '';
           };
           publicKeyFile = mkOption {

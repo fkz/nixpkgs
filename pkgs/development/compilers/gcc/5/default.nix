@@ -57,7 +57,7 @@ assert langGo -> langCC;
 with stdenv.lib;
 with builtins;
 
-let version = "5.1.0";
+let version = "5.2.0";
 
     # Whether building a cross-compiler for GNU/Hurd.
     crossGNU = cross != null && cross.config == "i586-pc-gnu";
@@ -210,7 +210,7 @@ stdenv.mkDerivation ({
 
   src = fetchurl {
     url = "mirror://gnu/gcc/gcc-${version}/gcc-${version}.tar.bz2";
-    sha256 = "1bd5vj4px3s8nlakbgrh38ynxq4s654m6nxz7lrj03mvkkwgvnmp";
+    sha256 = "1bccp8a106xwz3wkixn65ngxif112vn90qf95m6lzpgpnl25p0sz";
   };
 
   inherit patches;
@@ -318,7 +318,7 @@ stdenv.mkDerivation ({
       " --with-gnu-as --without-gnu-ld "
       else ""}
     --enable-lto
-    ${if enableMultilib then "--disable-libquadmath" else "--disable-multilib"}
+    ${if enableMultilib then "--enable-multilib --disable-libquadmath" else "--disable-multilib"}
     ${if enableShared then "" else "--disable-shared"}
     ${if enablePlugin then "--enable-plugin" else "--disable-plugin"}
     ${optionalString (isl != null) "--with-isl=${isl}"}

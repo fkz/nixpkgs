@@ -5,11 +5,11 @@
 with stdenv.lib;
 stdenv.mkDerivation rec {
   name = "mariadb-${version}";
-  version = "10.0.19";
+  version = "10.0.20";
 
   src = fetchurl {
     url    = "https://downloads.mariadb.org/interstitial/mariadb-${version}/source/mariadb-${version}.tar.gz";
-    sha256 = "0cm1j4805ypbmrhajn4ar5rqsis1p5haxs7c04b6k540gmfmxgrg";
+    sha256 = "0ywb730l68mxvmpik1x2ndbdaaks6dmc17pxspspm5wlqxinjkrs";
   };
 
   buildInputs = [ cmake ncurses openssl zlib pcre libxml2 boost judy bison libevent ]
@@ -49,9 +49,10 @@ stdenv.mkDerivation rec {
     "-DWITH_PARTITION_STORAGE_ENGINE=1"
     "-DWITHOUT_EXAMPLE_STORAGE_ENGINE=1"
     "-DWITHOUT_FEDERATED_STORAGE_ENGINE=1"
-  ] ++ stdenv.lib.optional stdenv.isDarwin "-DWITHOUT_OQGRAPH_STORAGE_ENGINE=1";
-
-  NIX_CFLAGS_COMPILE = "-Wno-error=cpp";
+  ] ++ stdenv.lib.optionals stdenv.isDarwin [
+    "-DWITHOUT_OQGRAPH_STORAGE_ENGINE=1"
+    "-DWITHOUT_TOKUDB=1"
+  ];
 
   enableParallelBuilding = true;
 
@@ -103,6 +104,9 @@ stdenv.mkDerivation rec {
     # Make sure to propagate lib for compatability
     mkdir -p $out/nix-support
     echo "$lib" > $out/nix-support/propagated-native-build-inputs
+
+    # Don't install static libraries.
+    rm $lib/lib/libmysqlclient.a $lib/lib/libmysqld.a
   '';
 
   passthru.mysqlVersion = "5.6";

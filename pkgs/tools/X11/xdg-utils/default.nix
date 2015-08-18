@@ -1,13 +1,13 @@
-{ stdenv, fetchgit, file, libxslt, docbook_xml_dtd_412, docbook_xsl, xmlto
+{ stdenv, fetchzip, file, libxslt, docbook_xml_dtd_412, docbook_xsl, xmlto
 , w3m, which, gnugrep, gnused, coreutils }:
 
 stdenv.mkDerivation rec {
   name = "xdg-utils-1.1.0-rc3p7";
 
-  src = fetchgit {
-    url = "http://anongit.freedesktop.org/git/xdg/xdg-utils.git";
-    rev = "e8ee3b18d16e41b95148111b920a0c8beed3ac6c";
-    sha256 = "0qy9h7vh6sw7wmadjvasw4sdhb9fvv7bn32ifgasdx7ag3r3939w";
+  src = fetchzip {
+    name = "${name}.tar.gz";
+    url = "http://cgit.freedesktop.org/xdg/xdg-utils/snapshot/e8ee3b18d16e4.tar.gz";
+    sha256 = "1hz6rv45blcii1a8n1j45rg8vzm98vh4fvlca3zmay1kp57yr4jl";
   };
 
   # just needed when built from git
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
       substituteInPlace $item --replace "sed " "${gnused}/bin/sed "
       substituteInPlace $item --replace "egrep " "${gnugrep}/bin/egrep "
       sed -i $item -re "s#([^e])grep #\1${gnugrep}/bin/grep #g" # Don't replace 'egrep'
-      substituteInPlace $item --replace "which " "${which}/bin/which "
+      substituteInPlace $item --replace "which " "type -P "
       substituteInPlace $item --replace "/usr/bin/file" "${file}/bin/file"
     done
   '';

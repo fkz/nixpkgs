@@ -1,6 +1,6 @@
 { stdenv, fetchurl, pkgconfig
 , libevdev, mtdev, udev
-, documentationSupport ? true, doxygen ? null, graphviz ? null # Documentation
+, documentationSupport ? false, doxygen ? null, graphviz ? null # Documentation
 , eventGUISupport ? false, cairo ? null, glib ? null, gtk3 ? null # GUI event viewer support
 , testsSupport ? false, check ? null, valgrind ? null
 }:
@@ -15,11 +15,11 @@ in
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
-  name = "libinput-0.17.0";
+  name = "libinput-0.21.0";
 
   src = fetchurl {
     url = "http://www.freedesktop.org/software/libinput/${name}.tar.xz";
-    sha256 = "1nr8zg99hk6lz2g2kdvlz13i7cwvrsakakrn3c1w2id7wcxj9nxp";
+    sha256 = "0l7mhdr50g11hxg2pz8ihsgzbm0810syj05d3555rzhda6g7mkkw";
   };
 
   configureFlags = [

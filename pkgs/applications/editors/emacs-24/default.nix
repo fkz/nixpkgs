@@ -1,5 +1,5 @@
 { stdenv, fetchurl, ncurses, x11, libXaw, libXpm, Xaw3d
-, pkgconfig, gettext, gtk, libXft, dbus, libpng, libjpeg, libungif
+, pkgconfig, gettext, libXft, dbus, libpng, libjpeg, libungif
 , libtiff, librsvg, texinfo, gconf, libxml2, imagemagick, gnutls
 , alsaLib, cairo, acl, gpm
 , withX ? !stdenv.isDarwin
@@ -7,8 +7,8 @@
 , withGTK2 ? true, gtk2
 }:
 
-assert (libXft != null) -> libpng != null;	# probably a bug
-assert stdenv.isDarwin -> libXaw != null;	# fails to link otherwise
+assert (libXft != null) -> libpng != null;      # probably a bug
+assert stdenv.isDarwin -> libXaw != null;       # fails to link otherwise
 assert withGTK2 -> withX || stdenv.isDarwin;
 assert withGTK3 -> withX || stdenv.isDarwin;
 assert withGTK2 -> !withGTK3 && gtk2 != null;
@@ -45,8 +45,8 @@ stdenv.mkDerivation rec {
     ++ stdenv.lib.optionals withX
       [ x11 libXaw Xaw3d libXpm libpng libjpeg libungif libtiff librsvg libXft
         imagemagick gconf ]
-    ++ stdenv.lib.optional (withX && withGTK2) [ gtk2 ]
-    ++ stdenv.lib.optional (withX && withGTK3) [ gtk3 ]
+    ++ stdenv.lib.optional (withX && withGTK2) gtk2
+    ++ stdenv.lib.optional (withX && withGTK3) gtk3
     ++ stdenv.lib.optional (stdenv.isDarwin && withX) cairo;
 
   configureFlags =

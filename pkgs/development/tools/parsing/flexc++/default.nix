@@ -1,7 +1,7 @@
-{ stdenv, fetchurl, bobcat, gcc49, icmake, yodl }:
+{ stdenv, fetchurl, bobcat, icmake, yodl }:
 
 let version = "2.02.00"; in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   name = "flexc++-${version}";
 
   src = fetchurl {
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     maintainers = with maintainers; [ nckx ];
   };
 
-  buildInputs = [ bobcat gcc49 ];
+  buildInputs = [ bobcat ];
   nativeBuildInputs = [ icmake yodl ];
 
   postPatch = ''

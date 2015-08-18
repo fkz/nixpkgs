@@ -1,7 +1,7 @@
 { stdenv, fetchurl, zlib }:
 
 stdenv.mkDerivation rec {
-  name = "file-5.22";
+  name = "file-5.24";
 
   buildInputs = [ zlib ];
 
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
       "ftp://ftp.astron.com/pub/file/${name}.tar.gz"
       "http://distfiles.macports.org/file/${name}.tar.gz"
     ];
-    sha256 = "02zw14hw3gqlw91w2f2snbirvyrp7r83irvnnkjcb25q9kjaiqy4";
+    sha256 = "1kjhqwmi1sjw8jcf6li725c59wm00zajrdfwgkwqxs295vgb6b40";
   };
 
   meta = {

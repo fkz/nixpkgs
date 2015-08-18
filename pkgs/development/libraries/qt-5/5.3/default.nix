@@ -22,6 +22,8 @@ let
   ver = "${v_maj}.${v_min}";
 in
 
+let system-x86_64 = elem stdenv.system platforms.x86_64; in
+
 stdenv.mkDerivation rec {
   name = "qt-${ver}";
 
@@ -126,6 +128,16 @@ stdenv.mkDerivation rec {
     -no-linuxfb
     -no-kms
 
+    ${optionalString (!system-x86_64) "-no-sse2"}
+    -no-sse3
+    -no-ssse3
+    -no-sse4.1
+    -no-sse4.2
+    -no-avx
+    -no-avx2
+    -no-mips_dsp
+    -no-mips_dspr2
+
     -system-zlib
     -system-libpng
     -system-libjpeg
@@ -144,6 +156,11 @@ stdenv.mkDerivation rec {
     -${optionalString (buildTests == false) "no"}make tests
   '';
 
+  # PostgreSQL autodetection fails sporadically because Qt omits the "-lpq" flag
+  # if dependency paths contain the string "pq", which can occur in the hash.
+  # To prevent these failures, we need to override PostgreSQL detection.
+  PSQL_LIBS = optionalString (postgresql != null) "-L${postgresql}/lib -lpq";
+
   propagatedBuildInputs = [
     xlibs.libXcomposite libX11 libxcb libXext libXrender libXi
     fontconfig freetype openssl dbus.libs glib udev libxml2 libxslt pcre
@@ -159,7 +176,9 @@ stdenv.mkDerivation rec {
   ++ optional (postgresql != null) postgresql
   ++ optionals gtkStyle [gnome_vfs libgnomeui gtk GConf];
 
-  buildInputs = [ gdb bison flex gperf ruby ];
+  buildInputs =
+    [ bison flex gperf ruby ]
+    ++ optional developerBuild gdb;
 
   nativeBuildInputs = [ python perl pkgconfig ];
 

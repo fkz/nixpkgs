@@ -38,7 +38,7 @@ in stdenv.mkDerivation rec {
   '';
 
   preFixup = ''
-    wrapProgram "$out/libexec/gnome-user-share" \
+    wrapProgram "$out/libexec/gnome-user-share-webdav" \
       --set GDK_PIXBUF_MODULE_FILE "$GDK_PIXBUF_MODULE_FILE" \
       --prefix XDG_DATA_DIRS : "$out/share:$XDG_ICON_DIRS:$GSETTINGS_SCHEMAS_PATH"
   '';
@@ -46,7 +46,7 @@ in stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     homepage = https://help.gnome.org/users/gnome-user-share/3.8;
     description = "Service that exports the contents of the Public folder in your home directory on the local network";
-    maintainers = with maintainers; [ lethalman ];
+    maintainers = gnome3.maintainers;
     license = licenses.gpl2;
     platforms = platforms.linux;
   };

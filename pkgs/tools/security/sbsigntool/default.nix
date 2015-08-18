@@ -13,6 +13,8 @@ stdenv.mkDerivation rec {
 
   patches = [ ./autoconf.patch ];
 
+  prePatch = "patchShebangs .";
+
   buildInputs = [ autoconf automake utillinux openssl libuuid gnu-efi binutils pkgconfig help2man ];
 
   configurePhase = ''
@@ -41,7 +43,7 @@ stdenv.mkDerivation rec {
     description = "Tools for maintaining UEFI signature databases";
     homepage    = http://jk.ozlabs.org/docs/sbkeysync-maintaing-uefi-key-databases;
     maintainers = [ maintainers.tstrobel ];
-    platforms   = platforms.linux;
+    platforms   = [ "x86_64-linux" ]; # Broken on i686
   };
 }
 

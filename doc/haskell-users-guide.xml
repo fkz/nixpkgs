@@ -92,18 +92,18 @@ error: attribute ‘haskellPackages’ in selection path
   </para>
   <programlisting>
 $ nix-env -qaP coreutils
-nixos.pkgs.coreutils  coreutils-8.23
+nixos.coreutils  coreutils-8.23
 </programlisting>
   <para>
     If your system responds like that (most NixOS installatios will),
     then the attribute path to <literal>haskellPackages</literal> is
-    <literal>nixos.pkgs.haskellPackages</literal>. Thus, if you want to
+    <literal>nixos.haskellPackages</literal>. Thus, if you want to
     use <literal>nix-env</literal> without giving an explicit
     <literal>-f</literal> flag, then that's the way to do it:
   </para>
   <programlisting>
-$ nix-env -qaP -A nixos.pkgs.haskellPackages
-$ nix-env -iA nixos.pkgs.haskellPackages.cabal-install
+$ nix-env -qaP -A nixos.haskellPackages
+$ nix-env -iA nixos.haskellPackages.cabal-install
 </programlisting>
   <para>
     Our current default compiler is GHC 7.10.x and the
@@ -712,7 +712,7 @@ text-1.2.0.4-98506efb1b9ada233bb5c2b2db516d91
     </para>
     <programlisting>
 # nix-store -q --referrers /nix/store/*-haskell-text-1.2.0.4 \
-  | nix-store --repair-path --option binary-caches http://hydra.nixos.org
+  | xargs -L 1 nix-store --repair-path --option binary-caches http://hydra.nixos.org
 </programlisting>
     <para>
       If you're using additional Hydra servers other than

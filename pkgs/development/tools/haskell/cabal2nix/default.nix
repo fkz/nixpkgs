@@ -1,35 +1,41 @@
-{ mkDerivation, fetchgit, aeson, base, bytestring, Cabal, containers
-, deepseq, deepseq-generics, directory, doctest, filepath, gitMinimal
-, hackage-db, hspec, lens, monad-par, monad-par-extras, mtl, pretty
-, process, QuickCheck, regex-posix, SHA, split, stdenv, transformers
-, utf8-string, cartel, nix-prefetch-scripts, optparse-applicative
-, makeWrapper
+{ mkDerivation, fetchgit, aeson, ansi-wl-pprint, base, bytestring, Cabal
+, containers, deepseq, deepseq-generics, directory, doctest, filepath
+, hackage-db, hspec, lens, monad-par, monad-par-extras, mtl
+, optparse-applicative, pretty, process, QuickCheck, regex-posix, SHA, split
+, stdenv, transformers, utf8-string, makeWrapper, gitMinimal, cartel
+, nix-prefetch-scripts
 }:
 
 mkDerivation rec {
   pname = "cabal2nix";
-  version = "20150531";
+  version = "20150807-6-g9f58996";
   src = fetchgit {
     url = "http://github.com/NixOS/cabal2nix.git";
-    rev = "513a5fce6cfabe0b062424f6deb191a12f7e2187";
-    sha256 = "1j4x85cqj823d9swi473b4i9rz9wlm9m7c1il73h02dq5i67wida";
+    rev = "9f589961fba9fa6a92900c37cf1ab16c597b0c69";
+    sha256 = "1w5ba7cdanpq4nr8xngk1jsj0p6b17c6ap24ldzggrln216f3f7d";
     deepClone = true;
   };
+  isLibrary = false;
   isExecutable = true;
-  enableSharedLibraries = false;
-  enableSharedExecutables = false;
-  buildDepends = [
-    aeson base bytestring Cabal containers deepseq-generics directory
-    filepath hackage-db lens monad-par monad-par-extras mtl pretty
-    process regex-posix SHA split transformers utf8-string cartel
-    optparse-applicative
+  libraryHaskellDepends = [
+    aeson ansi-wl-pprint base bytestring Cabal containers
+    deepseq-generics directory filepath hackage-db lens monad-par
+    monad-par-extras mtl optparse-applicative pretty process
+    regex-posix SHA split transformers utf8-string
   ];
-  testDepends = [
-    aeson base bytestring Cabal containers deepseq deepseq-generics
-    directory doctest filepath hackage-db hspec lens monad-par
-    monad-par-extras mtl pretty process QuickCheck regex-posix SHA
-    split transformers utf8-string
+  executableHaskellDepends = [
+    aeson ansi-wl-pprint base bytestring Cabal containers
+    deepseq-generics directory filepath hackage-db lens monad-par
+    monad-par-extras mtl optparse-applicative pretty process
+    regex-posix SHA split transformers utf8-string
   ];
+  testHaskellDepends = [
+    aeson ansi-wl-pprint base bytestring Cabal containers deepseq
+    deepseq-generics directory doctest filepath hackage-db hspec lens
+    monad-par monad-par-extras mtl optparse-applicative pretty process
+    QuickCheck regex-posix SHA split transformers utf8-string
+  ];
+  buildDepends = [ cartel ];
   buildTools = [ gitMinimal makeWrapper ];
   preConfigure = ''
     git reset --hard # Re-create the index that fetchgit destroyed in the name of predictable hashes.

@@ -19,17 +19,17 @@
 with lib;
 
 stdenv.mkDerivation rec {
-  name = "samba-4.2.1";
+  name = "samba-4.2.3";
 
   src = fetchurl {
     url = "mirror://samba/pub/samba/stable/${name}.tar.gz";
-    sha256 = "1hsakc8h6rs48xr6i55m90pd53hpxcqjjnlwq8i2rp0nq4ws5sip";
+    sha256 = "0z2c17d2id0m59mfdxdljhizp97l29clmw6g5zp93n0q92pabpxn";
   };
 
   patches =
     [ ./4.x-no-persistent-install.patch
       ./4.x-fix-ctdb-deps.patch
-    ] ++ stdenv.lib.optional enableKerberos ./4.x-heimdal-compat.patch;
+    ];
 
   buildInputs =
     [ python pkgconfig perl libxslt docbook_xsl docbook_xml_dtd_42 /*
@@ -77,7 +77,7 @@ stdenv.mkDerivation rec {
 
   postFixup = ''
     export SAMBA_LIBS="$(find $out -type f -name \*.so -exec dirname {} \; | sort | uniq)"
-    read -r -d "" SCRIPT << EOF
+    read -r -d "" SCRIPT << EOF || true
     [ -z "\$SAMBA_LIBS" ] && exit 1;
     BIN='{}';
     OLD_LIBS="\$(patchelf --print-rpath "\$BIN" 2>/dev/null | tr ':' '\n')";

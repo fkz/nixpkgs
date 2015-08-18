@@ -66,7 +66,7 @@ stdenv.mkDerivation rec {
     ''
       # FIXME: patch this in systemd properly (and send upstream).
       # FIXME: use sulogin from util-linux once updated.
-      for i in src/remount-fs/remount-fs.c src/core/mount.c src/core/swap.c src/fsck/fsck.c units/emergency.service.in units/rescue.service.m4.in src/journal/cat.c src/core/shutdown.c src/nspawn/nspawn.c; do
+      for i in src/remount-fs/remount-fs.c src/core/mount.c src/core/swap.c src/fsck/fsck.c units/emergency.service.in units/rescue.service.in src/journal/cat.c src/core/shutdown.c src/nspawn/nspawn.c; do
         test -e $i
         substituteInPlace $i \
           --replace /usr/bin/getent ${stdenv.glibc}/bin/getent \
@@ -82,6 +82,8 @@ stdenv.mkDerivation rec {
 
       substituteInPlace src/journal/catalog.c \
         --replace /usr/lib/systemd/catalog/ $out/lib/systemd/catalog/
+
+      configureFlagsArray+=("--with-ntp-servers=0.nixos.pool.ntp.org 1.nixos.pool.ntp.org 2.nixos.pool.ntp.org 3.nixos.pool.ntp.org")
     '';
 
   # This is needed because systemd uses the gold linker, which doesn't
