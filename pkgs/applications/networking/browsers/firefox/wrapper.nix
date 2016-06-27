@@ -10,7 +10,8 @@
 
 ## configurability of the wrapper itself
 browser:
-{ browserName ? browser.browserName or (builtins.parseDrvName browser.name).name
+{ /*! this is the browser name */ 
+browserName ? browser.browserName or (builtins.parseDrvName browser.name).name
 , name ? (browserName + "-" + (builtins.parseDrvName browser.name).version)
 , desktopName ? # browserName with first letter capitalized
   (lib.toUpper (lib.substring 0 1 browserName) + lib.substring 1 (-1) browserName)
