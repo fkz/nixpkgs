@@ -41,6 +41,8 @@
   vulkan-headers,
   vulkan-loader,
   ninja,
+  systemGgml ? true,
+  ggml,
 }:
 
 let
@@ -118,7 +120,8 @@ effectiveStdenv.mkDerivation (finalAttrs: {
     ++ optionals rocmSupport rocmBuildInputs
     ++ optionals blasSupport [ blas ]
     ++ optionals vulkanSupport vulkanBuildInputs
-    ++ [ openssl ];
+    ++ [ openssl ]
+    ++ optionals systemGgml [ ggml ];
 
   npmRoot = "tools/server/webui";
   npmDepsHash = "sha256-RAFtsbBGBjteCt5yXhrmHL39rIDJMCFBETgzId2eRRk=";
@@ -153,6 +156,7 @@ effectiveStdenv.mkDerivation (finalAttrs: {
     (cmakeBool "GGML_METAL" metalSupport)
     (cmakeBool "GGML_RPC" rpcSupport)
     (cmakeBool "GGML_VULKAN" vulkanSupport)
+    (cmakeBool "LLAMA_USE_SYSTEM_GGML" systemGgml)
     (cmakeFeature "LLAMA_BUILD_NUMBER" finalAttrs.version)
   ]
   ++ optionals cudaSupport [
