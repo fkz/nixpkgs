@@ -78,6 +78,15 @@ let
       }
     else
       null;
+  openvinoWhisperLargeV3Models =
+    if enableOpenVinoAi then
+      fetchzip {
+        url = "https://huggingface.co/Intel/whisper.cpp-openvino-models/resolve/main/ggml-large-v3-models.zip";
+        hash = "sha256-y4hMQX60GYI0W7YlchytP7+V8ckWCAraRRsCu3QIFKw=";
+        stripRoot = false;
+      }
+    else
+      null;
   openvinoWhisperMediumModels =
     if enableOpenVinoAi then
       fetchzip {
@@ -168,6 +177,9 @@ stdenv.mkDerivation (finalAttrs: {
       --replace-fail "float* pXTTensor = xt_tensor.data<float>();" "float* pXTTensor = const_cast<float*>(xt_tensor.data<float>());" \
       --replace-fail "float* pXTensor_Out = x_out_tensor.data<float>();" "float* pXTensor_Out = const_cast<float*>(x_out_tensor.data<float>());" \
       --replace-fail "float* pXTTensor_Out = xt_out_tensor.data<float>();" "float* pXTTensor_Out = const_cast<float*>(xt_out_tensor.data<float>());"
+    substituteInPlace modules/mod-openvino/OVWhisperTranscription.cpp \
+      --replace-fail 'wxFileName(FileNames::BaseDir(), wxT("openvino-models"))' \
+        'wxFileName(wxT("${placeholder "out"}/lib/audacity"), wxT("openvino-models"))'
     sed -i '/^endforeach()/a \
 \
 add_subdirectory(mod-openvino)
@@ -283,8 +295,9 @@ add_subdirectory(mod-openvino)
   dontWrapGApps = true;
 
   postInstall = lib.optionalString enableOpenVinoAi ''
-    mkdir -p "$out/share/audacity/openvino-models"
-    cp -r ${openvinoWhisperMediumModels}/* "$out/share/audacity/openvino-models/"
+    mkdir -p "$out/lib/audacity/openvino-models"
+    cp -r ${openvinoWhisperMediumModels}/* "$out/lib/audacity/openvino-models/"
+    cp -r ${openvinoWhisperLargeV3Models}/* "$out/lib/audacity/openvino-models/"
   '';
 
   # Replace audacity's wrapper, to:
