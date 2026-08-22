@@ -1,47 +1,110 @@
 {
-  lib,
-  stdenvNoCC,
+  alsa-lib,
+  at-spi2-atk,
+  at-spi2-core,
+  bubblewrap,
+  buildFHSEnv,
+  cairo,
+  cups,
+  dbus,
+  dpkg,
+  expat,
   fetchurl,
-  _7zz,
-  undmg,
+  gdk-pixbuf,
+  glib,
+  gtk3,
+  lib,
+  libdrm,
+  libgbm,
+  libGL,
+  libnotify,
+  libpulseaudio,
+  libusb1,
+  libx11,
+  libxcomposite,
+  libxdamage,
+  libxext,
+  libxfixes,
+  libxkbcommon,
+  libxrandr,
+  libxcb,
+  mesa,
+  nspr,
+  nss,
+  pango,
+  ripgrep,
+  stdenv,
+  systemd,
 }:
-
 let
-  source = import ./source.nix;
+  version = "26.818.31338";
+  src = fetchurl {
+    url = "https://persistent.oaistatic.com/codex-app-prod/linux/deb/pool/main/c/chatgpt/chatgpt_26.818.31338_amd64.deb";
+    hash = "sha256-Q4J4SKdHJLVyvn+NyVRpirLMCRb3+dWZGg7oKJlE+Vs=";
+  };
+
+  unwrapped = stdenv.mkDerivation {
+    pname = "chatgpt-unwrapped";
+    inherit version src;
+    dontUnpack = true;
+    dontFixup = true;
+    nativeBuildInputs = [ dpkg ];
+    installPhase = "dpkg-deb --extract $src $out";
+  };
 in
-stdenvNoCC.mkDerivation {
+buildFHSEnv {
   pname = "chatgpt";
-  inherit (source) version;
+  inherit version;
 
-  src = fetchurl source.src;
-
-  nativeBuildInputs = [
-    undmg
+  targetPkgs = pkgs: [
+    alsa-lib
+    at-spi2-atk
+    at-spi2-core
+    bubblewrap
+    cairo
+    cups
+    dbus
+    expat
+    gdk-pixbuf
+    glib
+    gtk3
+    libdrm
+    libgbm
+    libGL
+    libnotify
+    libpulseaudio
+    libusb1
+    libx11
+    libxcomposite
+    libxdamage
+    libxext
+    libxfixes
+    libxkbcommon
+    libxrandr
+    libxcb
+    mesa
+    nspr
+    nss
+    pango
+    ripgrep
+    systemd
   ];
 
-  sourceRoot = ".";
+  extraBwrapArgs = [
+    "--ro-bind ${unwrapped}/usr /opt"
+  ];
+  runScript = "/opt/bin/chatgpt";
 
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p "$out/Applications"
-    mkdir -p "$out/bin"
-    cp -a ChatGPT.app "$out/Applications"
-    ln -s "$out/Applications/ChatGPT.app/Contents/MacOS/ChatGPT" "$out/bin/ChatGPT"
-
-    runHook postInstall
+  extraInstallCommands = ''
+    cp -r ${unwrapped}/usr/share $out/share
   '';
 
-  passthru.updateScript = ./update.sh;
-
   meta = {
-    description = "Desktop application for ChatGPT";
-    homepage = "https://openai.com/chatgpt/desktop/";
-    changelog = "https://help.openai.com/en/articles/9703738-macos-app-release-notes";
+    description = "OpenAI desktop app with Chat, Work, and Codex in an FHS environment";
+    homepage = "https://chatgpt.com/download/";
     license = lib.licenses.unfree;
-    maintainers = with lib.maintainers; [ wattmto ];
-    platforms = lib.platforms.darwin;
+    mainProgram = "chatgpt";
+    platforms = [ "x86_64-linux" ];
     sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
-    mainProgram = "ChatGPT";
   };
 }
